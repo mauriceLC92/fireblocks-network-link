@@ -148,7 +148,7 @@ npm run scripts:momo-offramp                     # Create a MoMo off-ramp
 npm run scripts:lbt-onramp                       # Create an LBT on-ramp
 npm run scripts:lbt-offramp                      # Create an LBT off-ramp
 npm run scripts:bridge-ramp                      # Create a bridge ramp (crypto -> crypto)
-npm run scripts:get-rate -- <accountId> <rampsPairId>  # Get rate for a ramps pair
+npm run scripts:get-rate -- <accountId> <rampsPairId>  # Get rate; or --conversionPairId= / --orderBookPairId=
 npm run download-server-capabilities             # Download capabilities from configured server
 ```
 

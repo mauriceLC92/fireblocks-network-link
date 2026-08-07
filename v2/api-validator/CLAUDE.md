@@ -48,6 +48,8 @@ All scripts use `scripts/_shared.ts`, which exports `makeClient()`, `printConfig
 
 `requireAccountId(usage, expectedArgs?)` takes the account ID from `ACCOUNT_ID` in the active env file, overridden by the first positional argument. For scripts taking a second positional argument (`get-ramp`, `get-rate`, `get-quote`), pass `expectedArgs = 2` and read the second with `positionalArg(1, 2)` — that keeps `<accountId> <rampId>` and bare `<rampId>` both working.
 
+`positionalArgs()` strips every `--flag` and its value, so flag position never shifts those positional indexes; `flagValue(name)` reads one, accepting both `--name value` and `--name=value`. Anything reading `process.argv` directly re-introduces the bug where a flag is miscounted as the account ID — `tests/self-tests/script-args.test.ts` pins the rules. `get-account-rate.ts` shows the pattern for a script whose argument count depends on which flags were passed.
+
 Request bodies are JSON files in `scripts/payloads/`, named `<script>.<variant>.json`. Scripts declare a `DEFAULT_PAYLOAD` and call `loadPayload(name, { idempotencyKey: true })`; the payload is overridden by `--payload <name>` or the `PAYLOAD` env var (which also accepts an absolute path). `loadPayload` strips the `$comment` key and injects a fresh `idempotencyKey` when asked. Never reintroduce inline request consts — the UI reads the same files, so a second copy would drift.
 
 Liquidity scripts (`scripts/liquidity/`) have no npm aliases — run with `ts-node scripts/liquidity/<script>.ts` directly.

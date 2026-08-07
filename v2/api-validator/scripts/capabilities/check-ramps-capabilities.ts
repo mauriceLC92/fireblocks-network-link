@@ -1,7 +1,7 @@
 /**
  * Check ramp capabilities for crypto→crypto (Bridge) entries (Finding 2).
  *
- * Fetches GET /accounts/{accountId}/capabilities/ramps and prints a summary of:
+ * Fetches GET /accounts/\{accountId\}/capabilities/ramps and prints a summary of:
  *   - on-ramp entries  (fiat → crypto)   — previously present
  *   - off-ramp entries (crypto → fiat)   — previously present
  *   - bridge entries   (crypto → crypto) — Finding 2: USDT↔USDC cross-chain pairs should now exist

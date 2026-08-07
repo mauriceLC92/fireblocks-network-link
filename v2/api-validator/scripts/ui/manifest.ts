@@ -150,7 +150,10 @@ export const SCRIPTS: ScriptSpec[] = [
     group: 'Rates',
     file: 'rates/get-account-rate.ts',
     needsAccount: true,
-    extraArg: { label: 'Ramps pair ID', placeholder: '294e0264-1d41-57af-9891-237910075696' },
+    extraArg: {
+      label: 'Ramps pair ID (or --conversionPairId=<id> / --orderBookPairId=<id>)',
+      placeholder: '294e0264-1d41-57af-9891-237910075696',
+    },
   },
   {
     id: 'liquidity-create-quote',

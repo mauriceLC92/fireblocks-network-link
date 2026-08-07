@@ -77,7 +77,20 @@ const PATTERNS: Pattern[] = [
 
 /** Country codes the payloads use, longest first so +254 beats +25. */
 const COUNTRY_CODES = [
-  '254', '255', '256', '260', '263', '265', '267', '250', '234', '233', '229', '225', '221', '27',
+  '254',
+  '255',
+  '256',
+  '260',
+  '263',
+  '265',
+  '267',
+  '250',
+  '234',
+  '233',
+  '229',
+  '225',
+  '221',
+  '27',
 ];
 
 /** A +<code><digits> string that is not one of our placeholder shapes. */

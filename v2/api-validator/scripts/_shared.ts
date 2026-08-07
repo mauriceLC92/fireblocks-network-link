@@ -17,16 +17,47 @@ export function makeClient(): Client {
 }
 
 /**
- * Positional arguments, with `--payload <name>` and its value removed so that
- * flag position doesn't shift the positional indexes scripts rely on.
+ * Positional arguments, with every `--flag` and its value removed, so that flag
+ * position never shifts the positional indexes scripts rely on.
+ *
+ * Both spellings are understood: `--flag value` and `--flag=value`. A flag that
+ * is followed by another flag, or that ends the command line, is treated as
+ * valueless and consumes nothing.
  */
 export function positionalArgs(): string[] {
   const args = process.argv.slice(2);
-  const flagIndex = args.indexOf('--payload');
-  if (flagIndex !== -1) {
-    args.splice(flagIndex, 2);
+  const positional: string[] = [];
+
+  for (let i = 0; i < args.length; i++) {
+    if (!args[i].startsWith('--')) {
+      positional.push(args[i]);
+      continue;
+    }
+    if (!args[i].includes('=') && i + 1 < args.length && !args[i + 1].startsWith('--')) {
+      i++;
+    }
   }
-  return args;
+  return positional;
+}
+
+/**
+ * The value of `--<name>`, accepting `--name value` and `--name=value`.
+ * Returns undefined when the flag is absent or carries no value.
+ */
+export function flagValue(name: string): string | undefined {
+  const args = process.argv.slice(2);
+  const flag = `--${name}`;
+
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === flag) {
+      const next = args[i + 1];
+      return next !== undefined && !next.startsWith('--') ? next : undefined;
+    }
+    if (args[i].startsWith(`${flag}=`)) {
+      return args[i].slice(flag.length + 1);
+    }
+  }
+  return undefined;
 }
 
 /**
@@ -99,11 +130,7 @@ function stripComments(value: unknown): unknown {
  * injected unless the payload already carries one.
  */
 export function loadPayload<T>(defaultName: string, options: { idempotencyKey?: boolean } = {}): T {
-  const flagIndex = process.argv.indexOf('--payload');
-  const requested =
-    (flagIndex !== -1 ? process.argv[flagIndex + 1] : undefined) ??
-    process.env.PAYLOAD ??
-    defaultName;
+  const requested = flagValue('payload') ?? process.env.PAYLOAD ?? defaultName;
 
   const filename = requested.endsWith('.json') ? requested : `${requested}.json`;
   const filePath = path.isAbsolute(filename) ? filename : path.join(PAYLOADS_DIR, filename);

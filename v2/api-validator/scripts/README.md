@@ -241,11 +241,28 @@ npm run scripts:bridge-ramp -- [--payload bridge-ramp.usdt-usdc]
 
 ### Rates
 
-**Get rate for an account by ramps pair ID**
+**Get rate for an account by pair ID**
 ```bash
 npm run scripts:get-rate -- <accountId> <rampsPairId>
-# Output: scripts/output/rates-get-<accountId>-<rampsPairId>.json
+# Output: scripts/output/rates-get-<accountId>-<pairId>.json
 ```
+
+The endpoint accepts three kinds of pair. Pass exactly one:
+
+| Argument | Pair type |
+| --- | --- |
+| `<rampsPairId>`, or `--rampsPairId=<id>` | A ramps pair |
+| `--conversionPairId=<id>` | A conversion pair |
+| `--orderBookPairId=<id>` | An order book pair |
+
+A bare argument counts as a ramps pair ID, which is the common case.
+
+```bash
+npm run scripts:get-rate -- --conversionPairId=BTC_USD
+npm run scripts:get-rate -- --orderBookPairId=BTC_USDT
+```
+
+The script stops when you pass two pair types. Your provider may not support all three.
 
 ---
 
