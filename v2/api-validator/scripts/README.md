@@ -39,14 +39,16 @@ REJECT_UNAUTHORIZED=false    # staging only, for a self-signed TLS certificate
 
 ### Credentials to share
 
-Four values differ per person or per environment. Ask a teammate for them, and read them from the team password manager. Never send them over chat or email.
+Four values differ per person or per environment.
 
-| Variable | Staging | Production |
+| Variable | Where to get it | Secret? |
 | --- | --- | --- |
-| `SERVER` | The staging base URL | The production base URL |
-| `ACCOUNT_ID` | The staging account ID | The production account ID |
-| `API_KEY` | Your staging key | Your production key |
-| `SIGNING_PRIVATE_KEY` | The staging HMAC secret | The production HMAC secret |
+| `SERVER` | Ask a teammate | No |
+| `ACCOUNT_ID` | Ask a teammate | No |
+| `API_KEY` | Create your own in the admin dashboard | Yes |
+| `SIGNING_PRIVATE_KEY` | Create your own in the admin dashboard | Yes |
+
+Create your own key and secret per environment. Never send either one over chat or email, and never commit them.
 
 Leave `REJECT_UNAUTHORIZED` out of `.env.production`.
 
@@ -136,7 +138,7 @@ To set one up:
 
 1. Copy a committed payload into `scripts/payloads/private/`.
 2. Replace the placeholder details with the real ones.
-3. Ask a teammate for the shared values. They live in the team password manager, never in this repo.
+3. Ask a teammate for any shared value you need, such as a partner ID.
 
 ## Output files
 

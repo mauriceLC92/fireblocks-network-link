@@ -6,8 +6,8 @@ This directory is the fork `mauriceLC92/fireblocks-network-link`. It is not a se
 | --- | --- | --- |
 | `network-link-scripts` | All script work. The fork's default branch. | Yes |
 | `main` | An exact mirror of upstream `main`. Never commit here. | Yes |
-| `feat/maurice-scripts` | The old branch. Its history holds real personal data. | **No** |
-| `backup/maurice-scripts-original` | A safety copy of the old branch. Same personal data. | **No** |
+
+No branch holds real personal data. The old branches are deleted, and their commits are purged.
 
 ## When is a push safe?
 
@@ -44,35 +44,19 @@ Use plain `git push`. It sends the current branch only.
 
 ## Never do these
 
-- **Never run `git push --all` or `git push --mirror`.** Both commands push every local branch, including the two that hold real personal data.
-- **Never push `feat/maurice-scripts` or `backup/maurice-scripts-original`.** Their history holds the real names, phone numbers, bank account numbers, and the production account ID across all 19 original commits.
 - **Never commit an env file.** `.gitignore` covers `.env`, `.env.staging`, `.env.production` and `.env.local`.
 - **Never commit a payload with live details.** Those belong in `v2/api-validator/scripts/payloads/private/`, which is gitignored.
 
-## The old branches
+## How this fork reached a safe state
 
-Two local branches still hold the real personal data in their history:
+The script work started on a branch that held real personal data across 19 commits. We cleaned it in four steps:
 
-- `feat/maurice-scripts`
-- `backup/maurice-scripts-original`
+1. Replaced every real name, phone number, email and account number with a placeholder.
+2. Squashed the 19 commits into one, so no earlier version keeps the real values.
+3. Deleted the two old branches. Neither ever reached GitHub.
+4. Purged the unreachable commits with `git reflog expire` and `git gc`.
 
-Neither branch exists on GitHub. They are a safety net, in case the squash lost something.
-
-Delete both once you are confident the new branch is complete:
-
-```bash
-git branch -D feat/maurice-scripts backup/maurice-scripts-original
-```
-
-After the deletion, no local branch holds personal data, and `git push --all` becomes harmless. Until then, treat the two branches as local-only.
-
-To compare the new branch against the old one first:
-
-```bash
-git diff feat/maurice-scripts network-link-scripts --stat
-```
-
-Expect differences only in the payload files, `PROD_READ_SCRIPTS.md`, `SHARING.md`, and the two deleted stray files.
+Nothing in this repo now holds a real person's details. Keep it that way with the check above.
 
 ## Pushing normal work
 
@@ -121,8 +105,10 @@ npm run generate-openapi-client
 
 Send them two things:
 
-1. The clone command. `v2/api-validator/scripts/README.md` covers the rest.
+1. The clone command. A plain clone lands on `network-link-scripts`, because that is the fork's default branch. `v2/api-validator/scripts/README.md` covers the rest.
    ```bash
    git clone git@github.com:mauriceLC92/fireblocks-network-link.git
    ```
-2. The credentials, through the team password manager. Never through chat, email, or a commit. See "Credentials to share" in `v2/api-validator/scripts/README.md` for the exact list.
+2. The server URL and the account ID, for staging and for production. Neither is a credential.
+
+Each person creates their own API key and signing secret in the admin dashboard. Never send a key or a secret through chat, email, or a commit. See "Credentials to share" in `v2/api-validator/scripts/README.md`.
