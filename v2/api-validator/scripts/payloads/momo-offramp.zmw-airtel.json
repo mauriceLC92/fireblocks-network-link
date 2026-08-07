@@ -1,0 +1,67 @@
+{
+  "$comment": "Copies the shape of a partner record: crypto -> ZMW MoMo (airtel) off-ramp for Zambia (ZM). Every person detail here is a placeholder. Zambia mobile numbers are +260 plus 9 digits; 97 is an Airtel range.",
+  "amount": "6",
+  "type": "OffRamp",
+  "from": {
+    "transferMethod": "PublicBlockchain",
+    "asset": {
+      "assetId": "b4942573-969a-4115-834f-325726e3e7d3"
+    }
+  },
+  "to": {
+    "accountHolder": { "name": "Mwansa Chanda" },
+    "mobilePhoneNumber": "+260971234567",
+    "provider": "airtel",
+    "transferMethod": "Momo",
+    "asset": {
+      "nationalCurrencyCode": "ZMW",
+      "testAsset": false
+    },
+    "email": "mwansa.chanda@example.com"
+  },
+  "participantsIdentification": {
+    "originator": {
+      "externalReferenceId": "test",
+      "entityType": "Individual",
+      "email": "test@example.com",
+      "phone": "+972123456789",
+      "idNumber": "22",
+      "idType": "BVN",
+      "additionalIdNumber": "22",
+      "additionalIdType": "BVN",
+      "participantRelationshipType": "ThirdParty",
+      "fullName": { "firstName": "test", "lastName": "test" },
+      "dateOfBirth": "1990-01-01",
+      "postalAddress": {
+        "streetName": "test",
+        "city": "test",
+        "postalCode": "test",
+        "subdivision": "Province",
+        "district": "test",
+        "country": "AM"
+      }
+    },
+    "beneficiary": {
+      "externalReferenceId": "test",
+      "entityType": "Individual",
+      "email": "test@example.com",
+      "phone": "+972123456789",
+      "idNumber": "22",
+      "idType": "BVN",
+      "additionalIdNumber": "22",
+      "additionalIdType": "BVN",
+      "participantRelationshipType": "ThirdParty",
+      "fullName": { "firstName": "test", "lastName": "test" },
+      "dateOfBirth": "1990-01-01",
+      "postalAddress": {
+        "streetName": "test",
+        "buildingNumber": "12",
+        "city": "test",
+        "postalCode": "test",
+        "subdivision": "Region",
+        "district": "test",
+        "country": "AX"
+      }
+    }
+  }
+}

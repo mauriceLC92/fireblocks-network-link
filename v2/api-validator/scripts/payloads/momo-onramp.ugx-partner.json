@@ -1,0 +1,72 @@
+{
+  "$comment": "Copies the shape of a partner attempt: UGX -> USDT on-ramp via MTN MoMo for Uganda (UG). Every person detail here is a placeholder. Ugandan mobile numbers are +256 plus 9 digits; 77 is an MTN range. Replace quoteId with a quote you just created; the server rejects a stale quote.",
+  "amount": "222222",
+  "type": "OnRamp",
+  "from": {
+    "asset": {
+      "nationalCurrencyCode": "UGX",
+      "testAsset": false
+    },
+    "transferMethod": "Momo",
+    "provider": "mtn",
+    "mobilePhoneNumber": "+256771234567",
+    "email": "sarah.nakato@example.com"
+  },
+  "to": {
+    "asset": {
+      "assetId": "b4942573-969a-4115-834f-325726e3e7d3"
+    },
+    "transferMethod": "PublicBlockchain",
+    "address": "TYqj3V7FzqeDFa9sSKeLdtG7QvYpjVCa9v"
+  },
+  "executionDetails": {
+    "type": "Quote",
+    "quoteId": "30c4611b-8942-48fc-a2b4-5c9ad42cab65"
+  },
+  "participantsIdentification": {
+    "originator": {
+      "externalReferenceId": "test",
+      "entityType": "Individual",
+      "email": "sarah.nakato@example.com",
+      "phone": "+256771234567",
+      "idNumber": "22",
+      "idType": "BVN",
+      "additionalIdNumber": "22",
+      "additionalIdType": "BVN",
+      "participantRelationshipType": "ThirdParty",
+      "fullName": { "firstName": "Sarah", "lastName": "Nakato" },
+      "dateOfBirth": "1990-01-01",
+      "postalAddress": {
+        "streetName": "Kampala Road",
+        "buildingNumber": "12",
+        "postalCode": "00256",
+        "city": "Kampala",
+        "subdivision": "Central Region",
+        "district": "Kampala",
+        "country": "UG"
+      }
+    },
+    "beneficiary": {
+      "externalReferenceId": "test",
+      "entityType": "Individual",
+      "email": "sarah.nakato@example.com",
+      "phone": "+256771234567",
+      "idNumber": "22",
+      "idType": "BVN",
+      "additionalIdNumber": "22",
+      "additionalIdType": "BVN",
+      "participantRelationshipType": "ThirdParty",
+      "fullName": { "firstName": "Sarah", "lastName": "Nakato" },
+      "dateOfBirth": "1990-01-01",
+      "postalAddress": {
+        "streetName": "Kampala Road",
+        "buildingNumber": "222",
+        "postalCode": "00256",
+        "city": "Kampala",
+        "subdivision": "Central Region",
+        "district": "Kampala",
+        "country": "UG"
+      }
+    }
+  }
+}

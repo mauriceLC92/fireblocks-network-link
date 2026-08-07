@@ -1,0 +1,65 @@
+{
+  "$comment": "crypto -> XOF LBT (bank transfer) off-ramp for Benin (BJ). Every person detail here is a placeholder. Benin mobile numbers are +229 plus 10 digits, and they start with 01. A variant of this payload left out accountNumber and bankName, and used mobilePhoneNumber alone.",
+  "amount": "6",
+  "type": "OffRamp",
+  "from": {
+    "transferMethod": "PublicBlockchain",
+    "asset": {
+      "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+    }
+  },
+  "to": {
+    "accountHolder": { "name": "Kwame Mensah" },
+    "mobilePhoneNumber": "+2290196123456",
+    "transferMethod": "Lbt",
+    "accountNumber": "1234567890",
+    "bankName": "TST",
+    "asset": {
+      "nationalCurrencyCode": "XOF",
+      "testAsset": false
+    },
+    "email": "kwame.mensah@example.com"
+  },
+  "participantsIdentification": {
+    "originator": {
+      "externalReferenceId": "crypto-user-22222",
+      "entityType": "Individual",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Kwame", "lastName": "Mensah" },
+      "dateOfBirth": "1990-05-15",
+      "email": "kwame.mensah@example.com",
+      "phone": "+2290196123456",
+      "idNumber": "9001010000001",
+      "idType": "ID_CARD",
+      "postalAddress": {
+        "streetName": "Boulevard Steinmetz",
+        "buildingNumber": "123",
+        "postalCode": "00229",
+        "city": "Cotonou",
+        "subdivision": "Littoral",
+        "district": "Cotonou",
+        "country": "BJ"
+      }
+    },
+    "beneficiary": {
+      "externalReferenceId": "crypto-user-22222",
+      "entityType": "Individual",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Kwame", "lastName": "Mensah" },
+      "dateOfBirth": "1990-05-15",
+      "email": "kwame.mensah+beneficiary@example.com",
+      "phone": "+2290196123456",
+      "idNumber": "9001010000001",
+      "idType": "ID_CARD",
+      "postalAddress": {
+        "streetName": "Boulevard Steinmetz",
+        "buildingNumber": "123",
+        "postalCode": "00229",
+        "city": "Cotonou",
+        "subdivision": "Littoral",
+        "district": "Cotonou",
+        "country": "BJ"
+      }
+    }
+  }
+}

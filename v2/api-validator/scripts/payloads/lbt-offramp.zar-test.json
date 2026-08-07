@@ -1,0 +1,67 @@
+{
+  "$comment": "USDC -> ZAR (test asset) LBT off-ramp for South Africa (ZA), First National Bank. Every person detail here is a placeholder. South African mobile numbers are +27 plus 9 digits, and they start with 6, 7 or 8.",
+  "amount": "1",
+  "type": "OffRamp",
+  "from": {
+    "asset": {
+      "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+    },
+    "transferMethod": "PublicBlockchain"
+  },
+  "to": {
+    "asset": {
+      "nationalCurrencyCode": "ZAR",
+      "testAsset": true
+    },
+    "transferMethod": "Lbt",
+    "accountNumber": "1234567890",
+    "bankCode": "051001",
+    "bankName": "First National Bank",
+    "referenceId": "ZAR-2025-01-15-0001",
+    "accountHolder": {
+      "name": "Daniel Pretorius"
+    }
+  },
+  "participantsIdentification": {
+    "originator": {
+      "externalReferenceId": "crypto-user-22222",
+      "entityType": "Individual",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Daniel", "lastName": "Pretorius" },
+      "dateOfBirth": "1990-03-20",
+      "phone": "+27821234567",
+      "idNumber": "9003205800086",
+      "idType": "ID_CARD",
+      "email": "daniel.pretorius@example.com",
+      "postalAddress": {
+        "streetName": "Main Street",
+        "buildingNumber": "123",
+        "postalCode": "2000",
+        "city": "Johannesburg",
+        "subdivision": "Gauteng",
+        "district": "Sandton",
+        "country": "ZA"
+      }
+    },
+    "beneficiary": {
+      "externalReferenceId": "crypto-user-22222",
+      "entityType": "Individual",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Lerato", "lastName": "Mokoena" },
+      "dateOfBirth": "1985-07-15",
+      "phone": "+27831234567",
+      "idNumber": "8507155800087",
+      "idType": "ID_CARD",
+      "email": "lerato.mokoena@example.com",
+      "postalAddress": {
+        "streetName": "Church Street",
+        "buildingNumber": "456",
+        "postalCode": "8001",
+        "city": "Cape Town",
+        "subdivision": "Western Cape",
+        "district": "City Bowl",
+        "country": "ZA"
+      }
+    }
+  }
+}

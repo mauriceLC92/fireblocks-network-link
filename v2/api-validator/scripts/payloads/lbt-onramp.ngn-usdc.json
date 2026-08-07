@@ -1,0 +1,47 @@
+{
+  "$comment": "NGN -> USDC LBT (bank transfer) on-ramp for Nigeria (NG). Every person detail here is a placeholder. The originator sits in South Africa (+27) and the beneficiary in Nigeria (+234). Pair this with quote.ngn-usdc: fromAmount must equal this request's amount.",
+  "amount": "31400",
+  "type": "OnRamp",
+  "from": {
+    "asset": {
+      "nationalCurrencyCode": "NGN",
+      "testAsset": false
+    },
+    "transferMethod": "Lbt"
+  },
+  "to": {
+    "asset": {
+      "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+    },
+    "transferMethod": "PublicBlockchain",
+    "address": "0x3270De0B72cf34979ddCACc1f08d77bC9F0105f0"
+  },
+  "participantsIdentification": {
+    "originator": {
+      "entityType": "Individual",
+      "email": "daniel.pretorius@example.com",
+      "phone": "+27821234567",
+      "idNumber": "9001015800085",
+      "idType": "NIN Slip/Card",
+      "fullName": { "firstName": "Daniel", "lastName": "Pretorius" },
+      "dateOfBirth": "1990-01-01",
+      "postalAddress": {
+        "country": "ZA"
+      }
+    },
+    "beneficiary": {
+      "entityType": "Individual",
+      "email": "grace.adeyemi@example.com",
+      "phone": "+2348031234567",
+      "idNumber": "12345678901",
+      "idType": "NIN Slip/Card",
+      "additionalIdNumber": "98765432101",
+      "additionalIdType": "BVN",
+      "fullName": { "firstName": "Grace", "lastName": "Adeyemi" },
+      "dateOfBirth": "1990-01-01",
+      "postalAddress": {
+        "country": "NG"
+      }
+    }
+  }
+}

@@ -9,7 +9,18 @@ import {
   PublicBlockchainCapability,
 } from '../client/generated';
 
-dotenvConfig();
+const target = process.env.TARGET?.trim();
+if (target) {
+  const targetEnvPath = path.resolve(process.cwd(), `.env.${target}`);
+  if (!fs.existsSync(targetEnvPath)) {
+    throw new Error(
+      `TARGET=${target} but no env file found at ${targetEnvPath}. Create it (e.g. .env.staging, .env.production) or unset TARGET.`
+    );
+  }
+  dotenvConfig({ path: targetEnvPath });
+} else {
+  dotenvConfig();
+}
 
 export const preEncodingTypes = ['url-encoded', 'base64', 'hexstr', 'base58', 'base32'] as const;
 export const postEncodingTypes = ['base64', 'hexstr', 'base58', 'base32'] as const;
@@ -30,6 +41,12 @@ const config = convict({
     },
   },
   client: {
+    rejectUnauthorized: {
+      doc: 'Whether to reject self-signed TLS certificates (set false for staging servers)',
+      format: Boolean,
+      default: true,
+      env: 'REJECT_UNAUTHORIZED',
+    },
     serverBaseUrl: {
       doc: 'URL of the server that will be used to run the tests',
       default: null,

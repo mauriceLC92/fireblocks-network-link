@@ -1,0 +1,54 @@
+{
+  "$comment": "Default off-ramp payload: crypto -> ZAR (test asset) for South Africa (ZA). Note that transferMethod is Lbt, not Momo. Every person detail here is a placeholder.",
+  "amount": "1",
+  "type": "OffRamp",
+  "from": {
+    "asset": {
+      "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+    },
+    "transferMethod": "PublicBlockchain"
+  },
+  "to": {
+    "asset": {
+      "nationalCurrencyCode": "ZAR",
+      "testAsset": true
+    },
+    "transferMethod": "Lbt",
+    "mobilePhoneNumber": "+27821234567",
+    "email": "daniel.pretorius@example.com"
+  },
+  "participantsIdentification": {
+    "originator": {
+      "externalReferenceId": "crypto-user-22222",
+      "entityType": "Individual",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Daniel", "lastName": "Pretorius" },
+      "dateOfBirth": "1990-05-15",
+      "postalAddress": {
+        "streetName": "Main Street",
+        "buildingNumber": "123",
+        "postalCode": "2000",
+        "city": "Johannesburg",
+        "subdivision": "Gauteng",
+        "district": "Sandton",
+        "country": "ZA"
+      }
+    },
+    "beneficiary": {
+      "externalReferenceId": "crypto-user-22222",
+      "entityType": "Individual",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Daniel", "lastName": "Pretorius" },
+      "dateOfBirth": "1990-05-15",
+      "postalAddress": {
+        "streetName": "Main Street",
+        "buildingNumber": "123",
+        "postalCode": "2000",
+        "city": "Johannesburg",
+        "subdivision": "Gauteng",
+        "district": "Sandton",
+        "country": "ZA"
+      }
+    }
+  }
+}

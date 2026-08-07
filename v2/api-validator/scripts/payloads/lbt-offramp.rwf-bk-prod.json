@@ -1,0 +1,51 @@
+{
+  "$comment": "PRODUCTION shape: real money. USDC -> RWF LBT (bank transfer) off-ramp for Rwanda (RW), Bank of Kigali. Every person detail here is a placeholder. Copy this file to scripts/payloads/private/ and put the real account number and beneficiary details in that copy before you run it against production. The account ID comes from ACCOUNT_ID in .env.production. Add executionDetails.quoteId only with a quote you just created; the server rejects a stale quote.",
+  "amount": "2",
+  "type": "OffRamp",
+  "from": {
+    "asset": {
+      "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+    },
+    "transferMethod": "PublicBlockchain",
+    "address": "0x3270De0B72cf34979ddCACc1f08d77bC9F0105f0"
+  },
+  "to": {
+    "asset": {
+      "nationalCurrencyCode": "RWF",
+      "testAsset": false
+    },
+    "transferMethod": "Lbt",
+    "accountNumber": "100000000001",
+    "bankCode": "BKIGRWRW",
+    "bankName": "Bank of Kigali (BK)",
+    "accountHolder": {
+      "name": "Eric Mugisha"
+    }
+  },
+  "participantsIdentification": {
+    "originator": {
+      "entityType": "Individual",
+      "fullName": { "firstName": "Eric", "lastName": "Mugisha" },
+      "dateOfBirth": "1990-01-01",
+      "email": "eric.mugisha@example.com",
+      "phone": "+250781234567",
+      "idNumber": "123456789",
+      "idType": "NIN Slip/Card",
+      "postalAddress": {
+        "country": "RW"
+      }
+    },
+    "beneficiary": {
+      "entityType": "Individual",
+      "fullName": { "firstName": "Eric", "lastName": "Mugisha" },
+      "dateOfBirth": "1990-01-01",
+      "email": "eric.mugisha@example.com",
+      "phone": "+250781234567",
+      "idNumber": "123456789",
+      "idType": "NIN Slip/Card",
+      "postalAddress": {
+        "country": "RW"
+      }
+    }
+  }
+}

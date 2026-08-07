@@ -1,0 +1,68 @@
+{
+  "$comment": "KES (test asset) -> USDC on-ramp via m-pesa MoMo for Kenya (KE). Every person detail here is a placeholder. Replace quoteId with a quote you just created; the server rejects a stale quote.",
+  "amount": "100000",
+  "type": "OnRamp",
+  "from": {
+    "asset": {
+      "nationalCurrencyCode": "KES",
+      "testAsset": true
+    },
+    "transferMethod": "Momo",
+    "provider": "m-pesa",
+    "mobilePhoneNumber": "+254712345678",
+    "email": "alice.wanjiru@example.com"
+  },
+  "to": {
+    "asset": {
+      "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+    },
+    "transferMethod": "PublicBlockchain",
+    "address": "0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe"
+  },
+  "executionDetails": {
+    "type": "Quote",
+    "quoteId": "3e2fc9ff-3bbc-4bbf-bb4b-8a244f4d8e3e"
+  },
+  "participantsIdentification": {
+    "originator": {
+      "externalReferenceId": "crypto-user-22222",
+      "entityType": "Individual",
+      "email": "alice.wanjiru@example.com",
+      "phone": "+254712345678",
+      "idNumber": "9001010000001",
+      "idType": "ID_CARD",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Alice", "lastName": "Wanjiru" },
+      "dateOfBirth": "1990-05-15",
+      "postalAddress": {
+        "streetName": "Moi Avenue",
+        "buildingNumber": "123",
+        "postalCode": "00100",
+        "city": "Nairobi",
+        "subdivision": "Nairobi County",
+        "district": "Nairobi",
+        "country": "KE"
+      }
+    },
+    "beneficiary": {
+      "externalReferenceId": "crypto-user-22222",
+      "entityType": "Individual",
+      "email": "peter.njoroge@example.com",
+      "phone": "+254723456789",
+      "idNumber": "9001010000002",
+      "idType": "ID_CARD",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Peter", "lastName": "Njoroge" },
+      "dateOfBirth": "1990-05-15",
+      "postalAddress": {
+        "streetName": "Kenyatta Avenue",
+        "buildingNumber": "123",
+        "postalCode": "00100",
+        "city": "Nairobi",
+        "subdivision": "Nairobi County",
+        "district": "Nairobi",
+        "country": "KE"
+      }
+    }
+  }
+}

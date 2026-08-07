@@ -1,0 +1,64 @@
+{
+  "$comment": "crypto -> XOF MoMo (wave) off-ramp for Ivory Coast (CI). Every person detail here is a placeholder. Ivory Coast mobile numbers are +225 plus 10 digits, and they start with 01, 05 or 07.",
+  "amount": "1",
+  "type": "OffRamp",
+  "from": {
+    "transferMethod": "PublicBlockchain",
+    "asset": {
+      "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+    }
+  },
+  "to": {
+    "accountHolder": { "name": "Kwame Mensah" },
+    "mobilePhoneNumber": "+2250707123456",
+    "provider": "wave",
+    "transferMethod": "Momo",
+    "asset": {
+      "nationalCurrencyCode": "XOF",
+      "testAsset": false
+    },
+    "email": "kwame.mensah@example.com"
+  },
+  "participantsIdentification": {
+    "originator": {
+      "externalReferenceId": "crypto-user-22222",
+      "entityType": "Individual",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Kwame", "lastName": "Mensah" },
+      "dateOfBirth": "1990-05-15",
+      "email": "kwame.mensah@example.com",
+      "phone": "+2250707123456",
+      "idNumber": "9001010000001",
+      "idType": "ID_CARD",
+      "postalAddress": {
+        "streetName": "Boulevard de la République",
+        "buildingNumber": "123",
+        "postalCode": "00225",
+        "city": "Abidjan",
+        "subdivision": "Lagunes",
+        "district": "Abidjan",
+        "country": "CI"
+      }
+    },
+    "beneficiary": {
+      "externalReferenceId": "crypto-user-22222",
+      "entityType": "Individual",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Kwame", "lastName": "Mensah" },
+      "dateOfBirth": "1990-05-15",
+      "email": "kwame.mensah+beneficiary@example.com",
+      "phone": "+2250707123456",
+      "idNumber": "9001010000001",
+      "idType": "ID_CARD",
+      "postalAddress": {
+        "streetName": "Boulevard de la République",
+        "buildingNumber": "123",
+        "postalCode": "00225",
+        "city": "Abidjan",
+        "subdivision": "Lagunes",
+        "district": "Abidjan",
+        "country": "CI"
+      }
+    }
+  }
+}

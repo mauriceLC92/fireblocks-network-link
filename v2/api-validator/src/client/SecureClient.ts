@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import https from 'https';
 import config from '../config';
 import logger from '../logging';
 import { randomUUID } from 'crypto';
@@ -182,6 +183,9 @@ export class HttpRequestWithSecurityHeaders extends BaseHttpRequest {
 
     this.axiosClient = axios.create({
       timeout: 30000,
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: config.get('client').rejectUnauthorized,
+      }),
     });
 
     this.axiosClient.interceptors.request.use((request) => {

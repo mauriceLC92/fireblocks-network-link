@@ -1,0 +1,11 @@
+{
+  "$comment": "Liquidity quote. `id` must be a capability ID from GET /capabilities/liquidity/quotes.",
+  "id": "REPLACE_WITH_CAPABILITY_ID",
+  "fromAsset": {
+    "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+  },
+  "toAsset": {
+    "nationalCurrencyCode": "ZAR"
+  },
+  "fromAmount": "100"
+}

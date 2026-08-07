@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Network Link script runner</title>
+    <style>
+      :root {
+        --bg: #0f1115;
+        --panel: #171a21;
+        --panel-2: #1e222b;
+        --border: #2b303b;
+        --text: #e6e8ee;
+        --muted: #98a0b3;
+        --accent: #6ea8fe;
+        --danger: #ff6b6b;
+        --danger-bg: #2a1618;
+        --ok: #5ed39a;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      header {
+        padding: 18px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+      header h1 {
+        font-size: 16px;
+        margin: 0;
+        font-weight: 600;
+      }
+      header span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      main {
+        display: grid;
+        grid-template-columns: minmax(360px, 460px) 1fr;
+        gap: 20px;
+        padding: 20px 24px 40px;
+        align-items: start;
+      }
+      @media (max-width: 900px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        margin: 0 0 6px;
+      }
+      .field {
+        margin-bottom: 16px;
+      }
+      select,
+      input[type="text"],
+      textarea {
+        width: 100%;
+        background: var(--panel-2);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 9px 10px;
+        font-size: 13px;
+        font-family: inherit;
+      }
+      textarea {
+        font-family: var(--mono);
+        font-size: 12px;
+        line-height: 1.5;
+        min-height: 320px;
+        resize: vertical;
+        white-space: pre;
+      }
+      select:focus,
+      input:focus,
+      textarea:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: -1px;
+      }
+      .targets {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .target {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 12px;
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .target:has(input:checked) {
+        border-color: var(--accent);
+      }
+      .target.prod:has(input:checked) {
+        border-color: var(--danger);
+        background: var(--danger-bg);
+      }
+      .target input {
+        margin: 3px 0 0;
+        accent-color: var(--accent);
+      }
+      .target .name {
+        font-weight: 600;
+      }
+      .target.prod .name {
+        color: var(--danger);
+      }
+      .target .meta {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 11px;
+        word-break: break-all;
+      }
+      .warn {
+        margin: 0 0 16px;
+        padding: 12px;
+        border: 1px solid var(--danger);
+        background: var(--danger-bg);
+        border-radius: 6px;
+        color: var(--danger);
+        font-size: 13px;
+      }
+      .warn strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      button {
+        background: var(--accent);
+        color: #0b1020;
+        border: 0;
+        border-radius: 6px;
+        padding: 10px 18px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      button.secondary {
+        background: var(--panel-2);
+        color: var(--text);
+        border: 1px solid var(--border);
+        font-weight: 500;
+      }
+      button.confirm {
+        background: var(--danger);
+        color: #fff;
+      }
+      pre {
+        margin: 0;
+        font-family: var(--mono);
+        font-size: 12px;
+        line-height: 1.55;
+        white-space: pre-wrap;
+        word-break: break-word;
+        max-height: calc(100vh - 200px);
+        overflow: auto;
+      }
+      .status {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .status.ok {
+        color: var(--ok);
+      }
+      .status.err {
+        color: var(--danger);
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+        margin: -10px 0 16px;
+      }
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Network Link script runner</h1>
+      <span>local only &middot; credentials stay in your .env files</span>
+    </header>
+
+    <main>
+      <form class="panel" id="form" autocomplete="off">
+        <div class="field">
+          <label for="script">Script</label>
+          <select id="script"></select>
+        </div>
+
+        <div class="field">
+          <label>Environment</label>
+          <div class="targets" id="targets"></div>
+        </div>
+
+        <div class="field hidden" id="accountField">
+          <label for="accountId">Account ID</label>
+          <input type="text" id="accountId" />
+          <p class="hint" id="accountHint"></p>
+        </div>
+
+        <div class="field hidden" id="extraField">
+          <label for="extraArg" id="extraLabel"></label>
+          <input type="text" id="extraArg" />
+        </div>
+
+        <div class="field hidden" id="payloadField">
+          <label for="payload">Payload</label>
+          <select id="payload"></select>
+        </div>
+
+        <div class="field hidden" id="bodyField">
+          <label for="payloadBody">Request body</label>
+          <textarea id="payloadBody" spellcheck="false"></textarea>
+          <p class="hint" id="bodyHint">
+            Edits are sent for this run only. Use Save to write them back to the payload file.
+          </p>
+        </div>
+
+        <div id="prodWarning" class="warn hidden">
+          <strong>Production</strong>
+          <span id="prodWarningText"></span>
+        </div>
+
+        <div class="actions">
+          <button type="submit" id="runBtn">Run</button>
+          <button type="button" class="secondary hidden" id="saveBtn">Save payload</button>
+          <button type="button" class="secondary hidden" id="cancelBtn">Stop</button>
+          <span class="status" id="status"></span>
+        </div>
+      </form>
+
+      <div class="panel">
+        <pre id="output">Select a script and press Run.</pre>
+      </div>
+    </main>
+
+    <script>
+      const el = (id) => document.getElementById(id);
+      const state = { scripts: [], targets: [], controller: null, awaitingConfirm: false };
+
+      function currentScript() {
+        return state.scripts.find((s) => s.id === el('script').value);
+      }
+
+      function currentTarget() {
+        const checked = document.querySelector('input[name="target"]:checked');
+        return state.targets.find((t) => t.name === checked?.value);
+      }
+
+      function setStatus(text, kind = '') {
+        el('status').textContent = text;
+        el('status').className = 'status ' + kind;
+      }
+
+      async function loadConfig() {
+        const res = await fetch('/api/config');
+        const config = await res.json();
+        state.scripts = config.scripts;
+        state.targets = config.targets;
+
+        const groups = {};
+        for (const script of config.scripts) {
+          (groups[script.group] ||= []).push(script);
+        }
+        el('script').innerHTML = Object.entries(groups)
+          .map(
+            ([group, scripts]) =>
+              `<optgroup label="${group}">` +
+              scripts
+                .map((s) => `<option value="${s.id}">${s.label}${s.mutates ? ' • creates' : ''}</option>`)
+                .join('') +
+              `</optgroup>`
+          )
+          .join('');
+
+        el('targets').innerHTML = config.targets.length
+          ? config.targets
+              .map(
+                (t, i) => `
+              <label class="target ${t.isProduction ? 'prod' : ''}">
+                <input type="radio" name="target" value="${t.name}" ${i === 0 ? 'checked' : ''} />
+                <span>
+                  <span class="name">${t.name}</span><br />
+                  <span class="meta">${t.serverUrl || 'no SERVER set'}</span><br />
+                  <span class="meta">account: ${t.accountId || 'no ACCOUNT_ID set'}</span>
+                </span>
+              </label>`
+              )
+              .join('')
+          : '<p class="hint">No .env.&lt;target&gt; files found. Create .env.staging and .env.production.</p>';
+
+        for (const input of document.querySelectorAll('input[name="target"]')) {
+          input.addEventListener('change', onTargetChange);
+        }
+        el('script').addEventListener('change', onScriptChange);
+        onScriptChange();
+      }
+
+      function onTargetChange() {
+        resetConfirm();
+        const target = currentTarget();
+        const script = currentScript();
+
+        if (script?.needsAccount) {
+          el('accountId').value = target?.accountId || '';
+          el('accountHint').textContent = target?.accountId
+            ? `Default from .env.${target.name}. Override for a one-off run.`
+            : `No ACCOUNT_ID in .env.${target?.name} — enter one.`;
+        }
+
+        const isProd = !!target?.isProduction;
+        el('prodWarning').classList.toggle('hidden', !isProd);
+        if (isProd) {
+          el('prodWarningText').textContent = script?.mutates
+            ? `This creates a real ramp on ${target.serverUrl || 'production'} using account ${
+                el('accountId').value || target.accountId || '(unset)'
+              }. Press Run, then confirm.`
+            : `Read-only request against ${target.serverUrl || 'production'}. Press Run, then confirm.`;
+        }
+        updateRunButton();
+      }
+
+      async function onScriptChange() {
+        resetConfirm();
+        const script = currentScript();
+        if (!script) return;
+
+        el('accountField').classList.toggle('hidden', !script.needsAccount);
+        el('extraField').classList.toggle('hidden', !script.extraArg);
+        if (script.extraArg) {
+          el('extraLabel').textContent = script.extraArg.label;
+          el('extraArg').placeholder = script.extraArg.placeholder;
+          el('extraArg').value = '';
+        }
+
+        const hasPayloads = script.payloads.length > 0;
+        el('payloadField').classList.toggle('hidden', !hasPayloads);
+        el('bodyField').classList.toggle('hidden', !hasPayloads);
+        el('saveBtn').classList.toggle('hidden', !hasPayloads);
+
+        if (hasPayloads) {
+          el('payload').innerHTML = script.payloads
+            .map((p) => `<option value="${p}">${p}</option>`)
+            .join('');
+          el('payload').onchange = loadPayloadBody;
+          await loadPayloadBody();
+        }
+
+        onTargetChange();
+      }
+
+      async function loadPayloadBody() {
+        resetConfirm();
+        const name = el('payload').value;
+        setStatus('Loading payload…');
+        const res = await fetch(`/api/payloads/${encodeURIComponent(name)}`);
+        const text = await res.text();
+        if (!res.ok) {
+          setStatus('Could not load payload', 'err');
+          el('payloadBody').value = text;
+          return;
+        }
+        el('payloadBody').value = text.trimEnd();
+        setStatus('');
+      }
+
+      function updateRunButton() {
+        const isProd = !!currentTarget()?.isProduction;
+        el('runBtn').className = state.awaitingConfirm ? 'confirm' : '';
+        el('runBtn').textContent = state.awaitingConfirm
+          ? 'Confirm — run against production'
+          : isProd
+          ? 'Run…'
+          : 'Run';
+      }
+
+      function resetConfirm() {
+        state.awaitingConfirm = false;
+        updateRunButton();
+      }
+
+      el('saveBtn').addEventListener('click', async () => {
+        const name = el('payload').value;
+        setStatus('Saving…');
+        const res = await fetch(`/api/payloads/${encodeURIComponent(name)}`, {
+          method: 'PUT',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ body: el('payloadBody').value }),
+        });
+        const data = await res.json();
+        setStatus(res.ok ? `Saved ${data.saved}` : `Save failed: ${data.error}`, res.ok ? 'ok' : 'err');
+      });
+
+      el('cancelBtn').addEventListener('click', () => {
+        state.controller?.abort();
+      });
+
+      el('form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const script = currentScript();
+        const target = currentTarget();
+        if (!script || !target) {
+          setStatus('Pick a script and an environment', 'err');
+          return;
+        }
+
+        // Production needs a second, deliberate click.
+        if (target.isProduction && !state.awaitingConfirm) {
+          state.awaitingConfirm = true;
+          updateRunButton();
+          setStatus('Click again to confirm', 'err');
+          return;
+        }
+        resetConfirm();
+
+        const body = {
+          scriptId: script.id,
+          target: target.name,
+          accountId: script.needsAccount ? el('accountId').value.trim() : undefined,
+          extraArg: script.extraArg ? el('extraArg').value.trim() : undefined,
+        };
+
+        if (script.payloads.length) {
+          body.payload = el('payload').value;
+          const stored = await fetch(`/api/payloads/${encodeURIComponent(body.payload)}`).then((r) =>
+            r.ok ? r.text() : null
+          );
+          const edited = el('payloadBody').value;
+          // Only send a body when it differs from the stored file, so an
+          // unedited run uses the exact same file the CLI would.
+          if (stored === null || stored.trimEnd() !== edited.trimEnd()) {
+            body.payloadBody = edited;
+          }
+        }
+
+        el('runBtn').disabled = true;
+        el('cancelBtn').classList.remove('hidden');
+        setStatus('Running…');
+        el('output').textContent = '';
+
+        state.controller = new AbortController();
+        try {
+          const res = await fetch('/api/run', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(body),
+            signal: state.controller.signal,
+          });
+
+          if (!res.ok && res.headers.get('content-type')?.includes('application/json')) {
+            const data = await res.json();
+            el('output').textContent = data.error;
+            setStatus('Failed', 'err');
+            return;
+          }
+
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder();
+          let text = '';
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            text += decoder.decode(value, { stream: true });
+            el('output').textContent = text;
+            el('output').scrollTop = el('output').scrollHeight;
+          }
+          const exit = text.match(/--- exit code (\S+) ---/);
+          const ok = exit?.[1] === '0';
+          setStatus(ok ? 'Done' : 'Finished with errors', ok ? 'ok' : 'err');
+        } catch (error) {
+          if (error.name === 'AbortError') {
+            setStatus('Stopped');
+          } else {
+            el('output').textContent += `\n${error.message}\n`;
+            setStatus('Failed', 'err');
+          }
+        } finally {
+          el('runBtn').disabled = false;
+          el('cancelBtn').classList.add('hidden');
+          state.controller = null;
+        }
+      });
+
+      loadConfig().catch((error) => {
+        el('output').textContent = `Could not load config: ${error.message}`;
+      });
+    </script>
+  </body>
+</html>

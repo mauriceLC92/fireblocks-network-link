@@ -1,0 +1,68 @@
+{
+  "$comment": "PRODUCTION shape: crypto -> BWP LBT (bank transfer) off-ramp for Botswana (BW). Every person detail here is a placeholder. Copy this file to scripts/payloads/private/ and put the real account number, phone number and beneficiary details in that copy before you run it against production. Botswana mobile numbers are +267 plus 8 digits; 75 is an Orange range and 74 is a Mascom range.",
+  "amount": "6",
+  "type": "OffRamp",
+  "from": {
+    "asset": {
+      "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+    },
+    "transferMethod": "PublicBlockchain"
+  },
+  "to": {
+    "asset": {
+      "nationalCurrencyCode": "BWP",
+      "testAsset": false
+    },
+    "transferMethod": "Lbt",
+    "accountNumber": "1000000001",
+    "bankCode": "2814",
+    "bankName": "FNB",
+    "mobilePhoneNumber": "+26775123456",
+    "accountHolder": {
+      "name": "Anna Foster"
+    },
+    "email": "anna.foster@example.com"
+  },
+  "participantsIdentification": {
+    "originator": {
+      "externalReferenceId": "crypto-user-bwp-prod",
+      "entityType": "Individual",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Anna", "lastName": "Foster" },
+      "dateOfBirth": "1990-01-01",
+      "phone": "+26775123456",
+      "idNumber": "9001010000001",
+      "idType": "ID_CARD",
+      "email": "anna.foster@example.com",
+      "postalAddress": {
+        "streetName": "Main Mall",
+        "buildingNumber": "123",
+        "postalCode": "00267",
+        "city": "Gaborone",
+        "subdivision": "South-East",
+        "district": "Gaborone",
+        "country": "BW"
+      }
+    },
+    "beneficiary": {
+      "externalReferenceId": "crypto-user-bwp-prod",
+      "entityType": "Individual",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Anna", "lastName": "Foster" },
+      "dateOfBirth": "1990-01-01",
+      "phone": "+26775123456",
+      "idNumber": "9001010000001",
+      "idType": "ID_CARD",
+      "email": "anna.foster@example.com",
+      "postalAddress": {
+        "streetName": "Main Mall",
+        "buildingNumber": "123",
+        "postalCode": "00267",
+        "city": "Gaborone",
+        "subdivision": "South-East",
+        "district": "Gaborone",
+        "country": "BW"
+      }
+    }
+  }
+}

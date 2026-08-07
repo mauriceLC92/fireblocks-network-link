@@ -1,0 +1,62 @@
+{
+  "$comment": "Reproduces an error a partner reported. The partner sent to.email as an empty string \"\", which fails the email format check. Set to.email back to \"\" to reproduce the failure. Every person detail here is a placeholder.",
+  "amount": "15",
+  "type": "OffRamp",
+  "from": {
+    "transferMethod": "PublicBlockchain",
+    "asset": {
+      "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+    }
+  },
+  "to": {
+    "accountHolder": { "name": "Peter Njoroge" },
+    "mobilePhoneNumber": "+254712345678",
+    "provider": "m-pesa",
+    "transferMethod": "Momo",
+    "asset": {
+      "nationalCurrencyCode": "KES",
+      "testAsset": false
+    },
+    "email": "peter.njoroge@example.com"
+  },
+  "participantsIdentification": {
+    "beneficiary": {
+      "email": "peter.njoroge@example.com",
+      "phone": "+254712345678",
+      "idNumber": "9001010000001",
+      "idType": "ID_CARD",
+      "externalReferenceId": "123",
+      "postalAddress": {
+        "country": "KE",
+        "subdivision": "Nairobi County",
+        "streetName": "Kenyatta Avenue",
+        "city": "Nairobi",
+        "district": "Nairobi",
+        "postalCode": "00100",
+        "buildingNumber": "123"
+      },
+      "entityType": "Individual",
+      "participantRelationshipType": "ThirdParty",
+      "fullName": { "firstName": "Peter", "lastName": "Njoroge" },
+      "dateOfBirth": "1990-01-01"
+    },
+    "originator": {
+      "email": "alice.wanjiru@example.com",
+      "phone": "+254723456789",
+      "externalReferenceId": "123",
+      "postalAddress": {
+        "country": "KE",
+        "subdivision": "Nairobi County",
+        "streetName": "Moi Avenue",
+        "city": "Nairobi",
+        "district": "Nairobi",
+        "postalCode": "00100",
+        "buildingNumber": "123"
+      },
+      "entityType": "Individual",
+      "participantRelationshipType": "ThirdParty",
+      "fullName": { "firstName": "Alice", "lastName": "Wanjiru" },
+      "dateOfBirth": "1990-01-01"
+    }
+  }
+}

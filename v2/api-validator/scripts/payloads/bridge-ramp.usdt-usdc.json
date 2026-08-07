@@ -1,0 +1,18 @@
+{
+  "$comment": "Bridge ramp (crypto -> crypto, e.g. USDT Ethereum -> USDC Polygon). Replace from/to assetIds and the destination address with real values.",
+  "amount": "10",
+  "type": "Bridge",
+  "from": {
+    "asset": {
+      "assetId": "b4942573-969a-4115-834f-325726e3e7d3"
+    },
+    "transferMethod": "PublicBlockchain"
+  },
+  "to": {
+    "asset": {
+      "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+    },
+    "transferMethod": "PublicBlockchain",
+    "address": "0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe"
+  }
+}

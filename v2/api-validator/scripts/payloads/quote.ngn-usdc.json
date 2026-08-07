@@ -1,0 +1,12 @@
+{
+  "$comment": "On-ramp quote: NGN -> USDC. Pair this with lbt-onramp.ngn-usdc. fromAmount must equal that request's amount, and the assets must match exactly. Set partnerId to your own account ID, the same value as ACCOUNT_ID in the active env file.",
+  "fromAsset": {
+    "nationalCurrencyCode": "NGN",
+    "testAsset": false
+  },
+  "toAsset": {
+    "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+  },
+  "fromAmount": "31400",
+  "partnerId": "REPLACE_WITH_ACCOUNT_ID"
+}

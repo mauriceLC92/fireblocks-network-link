@@ -1,0 +1,60 @@
+{
+  "$comment": "ZAR (test asset) -> USDC LBT on-ramp for South Africa (ZA). Every person detail here is a placeholder. Replace quoteId with a quote you just created; the server rejects a stale quote.",
+  "amount": "1",
+  "type": "OnRamp",
+  "from": {
+    "asset": {
+      "nationalCurrencyCode": "ZAR",
+      "testAsset": true
+    },
+    "transferMethod": "Lbt",
+    "mobilePhoneNumber": "+27821234567",
+    "email": "daniel.pretorius@example.com",
+    "successRedirectUrl": "https://example.com/success"
+  },
+  "to": {
+    "asset": {
+      "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+    },
+    "transferMethod": "PublicBlockchain",
+    "address": "0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe"
+  },
+  "executionDetails": {
+    "type": "Quote",
+    "quoteId": "3e2fc9ff-3bbc-4bbf-bb4b-8a244f4d8e3e"
+  },
+  "participantsIdentification": {
+    "originator": {
+      "externalReferenceId": "crypto-user-22222",
+      "entityType": "Individual",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Daniel", "lastName": "Pretorius" },
+      "dateOfBirth": "1990-05-15",
+      "postalAddress": {
+        "streetName": "Main Street",
+        "buildingNumber": "123",
+        "postalCode": "2000",
+        "city": "Johannesburg",
+        "subdivision": "Gauteng",
+        "district": "Sandton",
+        "country": "ZA"
+      }
+    },
+    "beneficiary": {
+      "externalReferenceId": "crypto-user-22222",
+      "entityType": "Individual",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Daniel", "lastName": "Pretorius" },
+      "dateOfBirth": "1990-05-15",
+      "postalAddress": {
+        "streetName": "Main Street",
+        "buildingNumber": "123",
+        "postalCode": "2000",
+        "city": "Johannesburg",
+        "subdivision": "Gauteng",
+        "district": "Sandton",
+        "country": "ZA"
+      }
+    }
+  }
+}

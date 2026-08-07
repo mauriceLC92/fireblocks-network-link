@@ -1,0 +1,64 @@
+{
+  "$comment": "PRODUCTION shape: crypto -> BWP MoMo (orange) off-ramp for Botswana (BW). Every person detail here is a placeholder. Copy this file to scripts/payloads/private/ and put the real phone number and beneficiary details in that copy before you run it against production.",
+  "amount": "11",
+  "type": "OffRamp",
+  "from": {
+    "transferMethod": "PublicBlockchain",
+    "asset": {
+      "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+    }
+  },
+  "to": {
+    "accountHolder": { "name": "Anna Foster" },
+    "mobilePhoneNumber": "+26775123456",
+    "provider": "orange",
+    "transferMethod": "Momo",
+    "asset": {
+      "nationalCurrencyCode": "BWP",
+      "testAsset": false
+    },
+    "email": "anna.foster@example.com"
+  },
+  "participantsIdentification": {
+    "originator": {
+      "externalReferenceId": "crypto-user-bwp-prod",
+      "entityType": "Individual",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Anna", "lastName": "Foster" },
+      "dateOfBirth": "1990-01-01",
+      "email": "anna.foster@example.com",
+      "phone": "+26775123456",
+      "idNumber": "9001010000001",
+      "idType": "ID_CARD",
+      "postalAddress": {
+        "streetName": "Main Mall",
+        "buildingNumber": "123",
+        "postalCode": "00267",
+        "city": "Gaborone",
+        "subdivision": "South-East",
+        "district": "Gaborone",
+        "country": "BW"
+      }
+    },
+    "beneficiary": {
+      "externalReferenceId": "crypto-user-bwp-prod",
+      "entityType": "Individual",
+      "participantRelationshipType": "FirstParty",
+      "fullName": { "firstName": "Anna", "lastName": "Foster" },
+      "dateOfBirth": "1990-01-01",
+      "email": "anna.foster@example.com",
+      "phone": "+26775123456",
+      "idNumber": "9001010000001",
+      "idType": "ID_CARD",
+      "postalAddress": {
+        "streetName": "Main Mall",
+        "buildingNumber": "123",
+        "postalCode": "00267",
+        "city": "Gaborone",
+        "subdivision": "South-East",
+        "district": "Gaborone",
+        "country": "BW"
+      }
+    }
+  }
+}

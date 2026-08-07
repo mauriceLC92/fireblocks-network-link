@@ -1,0 +1,13 @@
+{
+  "$comment": "Off-ramp quote: USDC -> ZAR (both test assets). Set partnerId to your own account ID, the same value as ACCOUNT_ID in the active env file.",
+  "fromAsset": {
+    "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c",
+    "testAsset": true
+  },
+  "toAsset": {
+    "nationalCurrencyCode": "ZAR",
+    "testAsset": true
+  },
+  "fromAmount": "20",
+  "partnerId": "REPLACE_WITH_ACCOUNT_ID"
+}

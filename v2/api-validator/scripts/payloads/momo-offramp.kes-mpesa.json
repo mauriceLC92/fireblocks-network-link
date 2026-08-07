@@ -1,0 +1,56 @@
+{
+  "$comment": "crypto -> KES MoMo (m-pesa) off-ramp for Kenya (KE). Every person detail here is a placeholder. Kenyan mobile numbers are +254 plus 9 digits; 7 is the mobile range.",
+  "amount": "17",
+  "type": "OffRamp",
+  "from": {
+    "transferMethod": "PublicBlockchain",
+    "asset": {
+      "assetId": "ba215aa5-454d-4415-a575-8078e3dfeb4c"
+    }
+  },
+  "to": {
+    "accountHolder": { "name": "Peter Njoroge" },
+    "mobilePhoneNumber": "+254712345678",
+    "provider": "m-pesa",
+    "transferMethod": "Momo",
+    "asset": {
+      "nationalCurrencyCode": "KES",
+      "testAsset": false
+    },
+    "email": "peter.njoroge@example.com"
+  },
+  "participantsIdentification": {
+    "beneficiary": {
+      "externalReferenceId": "123",
+      "postalAddress": {
+        "country": "KE",
+        "subdivision": "Nairobi County",
+        "streetName": "Kenyatta Avenue",
+        "city": "Nairobi",
+        "district": "Nairobi",
+        "postalCode": "00100",
+        "buildingNumber": "12"
+      },
+      "entityType": "Individual",
+      "participantRelationshipType": "ThirdParty",
+      "fullName": { "firstName": "Peter", "lastName": "Njoroge" },
+      "dateOfBirth": "1980-01-01"
+    },
+    "originator": {
+      "externalReferenceId": "1241234",
+      "postalAddress": {
+        "country": "KE",
+        "subdivision": "Nairobi County",
+        "streetName": "Moi Avenue",
+        "city": "Nairobi",
+        "district": "Nairobi",
+        "postalCode": "00100",
+        "buildingNumber": "123"
+      },
+      "entityType": "Individual",
+      "participantRelationshipType": "ThirdParty",
+      "fullName": { "firstName": "Alice", "lastName": "Wanjiru" },
+      "dateOfBirth": "1990-01-01"
+    }
+  }
+}

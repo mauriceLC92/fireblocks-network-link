@@ -1,0 +1,12 @@
+{
+  "$comment": "On-ramp quote: UGX (test asset) -> USDT. Set partnerId to your own account ID, the same value as ACCOUNT_ID in the active env file.",
+  "fromAsset": {
+    "nationalCurrencyCode": "UGX",
+    "testAsset": true
+  },
+  "toAsset": {
+    "assetId": "b4942573-969a-4115-834f-325726e3e7d3"
+  },
+  "fromAmount": "30000",
+  "partnerId": "REPLACE_WITH_ACCOUNT_ID"
+}
