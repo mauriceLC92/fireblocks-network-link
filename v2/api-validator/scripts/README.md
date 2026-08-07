@@ -22,15 +22,41 @@ cp env.example .env.staging      # staging server
 cp env.example .env.production   # production, for read-only scripts
 ```
 
-Each file needs these variables:
+Each file needs the variables below. The signing settings are the same for staging and production:
 
-- `SERVER` — the base URL of the server.
-- `API_KEY` — your API key.
-- `ACCOUNT_ID` — the account the scripts operate on.
-- `SIGNING_ALGORITHM`, `SIGNING_PRIVATE_KEY`, `SIGNING_PRE_ENCODING`, `SIGNING_POST_ENCODING`, `SIGNING_HASH_ALGORITHM` — the request signing settings.
-- `REJECT_UNAUTHORIZED=false` — only if the server uses a self-signed TLS certificate.
+```bash
+SERVER=                      # the base URL of the server
+ACCOUNT_ID=                  # the account the scripts operate on
+API_KEY=                     # your API key
+SIGNING_PRIVATE_KEY=         # the HMAC secret
 
-Ask a teammate for these values. They live in the team password manager.
+SIGNING_ALGORITHM=hmac
+SIGNING_HASH_ALGORITHM=sha256
+SIGNING_PRE_ENCODING=base64
+SIGNING_POST_ENCODING=base64
+REJECT_UNAUTHORIZED=false    # staging only, for a self-signed TLS certificate
+```
+
+### Credentials to share
+
+Four values differ per person or per environment. Ask a teammate for them, and read them from the team password manager. Never send them over chat or email.
+
+| Variable | Staging | Production |
+| --- | --- | --- |
+| `SERVER` | The staging base URL | The production base URL |
+| `ACCOUNT_ID` | The staging account ID | The production account ID |
+| `API_KEY` | Your staging key | Your production key |
+| `SIGNING_PRIVATE_KEY` | The staging HMAC secret | The production HMAC secret |
+
+Leave `REJECT_UNAUTHORIZED` out of `.env.production`.
+
+### Check the setup
+
+Run a read-only script. It prints the server URL and account ID it resolved, then the response:
+
+```bash
+TARGET=staging npm run scripts:accounts
+```
 
 Pick an env file per run with `TARGET`:
 
@@ -41,6 +67,25 @@ TARGET=staging npm run scripts:ui
 ```
 
 With no `TARGET`, the scripts fall back to plain `.env`.
+
+## Production
+
+Production moves real money. Two rules:
+
+1. Run only the read-only scripts against production. `PROD_READ_SCRIPTS.md` lists every one of them.
+2. Check the printed `Target:` and `Account ID:` lines before you trust a result.
+
+The runner UI sorts production last, marks it red, and needs a second click on Run to confirm.
+
+## Before you push
+
+This repo is public. Check your staged changes for personal data first:
+
+```bash
+npm run check-pii
+```
+
+See `WORKFLOW.md` in the repo root for the full rules.
 
 ## Web UI
 

@@ -30,7 +30,7 @@
       "fullName": { "firstName": "Daniel", "lastName": "Pretorius" },
       "dateOfBirth": "1990-03-20",
       "phone": "+27821234567",
-      "idNumber": "9003205800086",
+      "idNumber": "9003200000086",
       "idType": "ID_CARD",
       "email": "daniel.pretorius@example.com",
       "postalAddress": {
@@ -50,7 +50,7 @@
       "fullName": { "firstName": "Lerato", "lastName": "Mokoena" },
       "dateOfBirth": "1985-07-15",
       "phone": "+27831234567",
-      "idNumber": "8507155800087",
+      "idNumber": "8507150000087",
       "idType": "ID_CARD",
       "email": "lerato.mokoena@example.com",
       "postalAddress": {

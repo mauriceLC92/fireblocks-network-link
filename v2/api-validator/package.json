@@ -34,6 +34,7 @@
     "build-docs": "npx @redocly/cli build-docs ../openapi/fb-unified-openapi.yaml --output ../openapi/docs.html",
     "build-docs-docker": "docker run --rm -v \"$(pwd)/..:/spec\" redocly/cli build-docs /spec/openapi/fb-unified-openapi.yaml --output /spec/openapi/docs.html",
     "download-server-capabilities": "NODE_ENV=test ts-node download-server-capabilities.ts  | pino-pretty",
+    "check-pii": "ts-node scripts/check-pii.ts",
     "scripts:ui": "ts-node scripts/ui/server.ts",
     "scripts:accounts": "ts-node scripts/accounts/list-accounts.ts",
     "scripts:ramps-caps": "ts-node scripts/capabilities/get-ramps-capabilities.ts",
