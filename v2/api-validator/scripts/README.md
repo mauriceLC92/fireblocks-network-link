@@ -99,7 +99,9 @@ A local-only page for picking a script, an environment, and a payload, then watc
 
 - **Environments** are discovered from your `.env.<target>` files. Each one's `SERVER` and `ACCOUNT_ID` are shown so you can see what you're about to hit.
 - **Production** is sorted last, highlighted in red, and needs a second click on the Run button to confirm.
-- **Payloads** are listed per script from `scripts/payloads/`. The body is editable: edits apply to that run only, unless you press **Save payload** to write them back to the file (where the CLI will pick them up too).
+- **Payloads** are listed per script from `scripts/payloads/`, each tagged with the currencies and countries it mentions and with its `$comment` as a one-line note. **New**, **Clone** and **Delete** manage the files directly; `private/` files are marked as such.
+- **Editing** applies to that run only, unless you press **Save** to write it back to the file (where the CLI will pick it up too). Unsaved edits are kept per payload and survive a reload; **revert to file** discards them. Invalid JSON blocks Run and Save and says where the parse failed.
+- **Results** show pass/fail with the exit code, HTTP status, duration and output file, the error message and request line when it fails, and the raw stream under a **Log** tab.
 - Credentials are never sent to the browser — only the resolved server URL and account ID.
 
 Binds to `127.0.0.1` only. Override the port with `UI_PORT`.

@@ -156,7 +156,7 @@ npm run download-server-capabilities             # Download capabilities from co
 
 Request bodies live in `scripts/payloads/` as JSON, one file per scenario (`<script>.<variant>.json`). Each script has a default; select another with `--payload <name>`, and pass a bad name to list them all. A `$comment` key is stripped before sending. Ramp-creation scripts generate a fresh `idempotencyKey` per run, so every run creates a new ramp — to test idempotency, hard-code `idempotencyKey` in the payload file and run it twice.
 
-`npm run scripts:ui` serves a local-only page (127.0.0.1:8100) for choosing a script, environment, and payload, editing the request body, and watching output stream live. It shells out to the same commands as the CLI. Production targets require a confirming second click.
+`npm run scripts:ui` serves a local-only page (127.0.0.1:8100) for choosing a script, environment, and payload, editing the request body, and watching output stream live. Payloads can also be created, cloned and deleted from the page, and each one is labelled with the currencies and countries it mentions. It shells out to the same commands as the CLI. Production targets require a confirming second click.
 
 Liquidity scripts (`scripts/liquidity/`) don't yet have npm aliases — run them directly with `ts-node scripts/liquidity/<script>.ts`.
 

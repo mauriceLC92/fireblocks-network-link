@@ -24,6 +24,10 @@
       "participantRelationshipType": "FirstParty",
       "fullName": { "firstName": "Daniel", "lastName": "Pretorius" },
       "dateOfBirth": "1990-05-15",
+      "phone": "+27821234567",
+      "idNumber": "9005150000081",
+      "idType": "ID Card",
+      "email": "daniel.pretorius@example.com",
       "postalAddress": {
         "streetName": "Main Street",
         "buildingNumber": "123",
@@ -40,6 +44,10 @@
       "participantRelationshipType": "FirstParty",
       "fullName": { "firstName": "Daniel", "lastName": "Pretorius" },
       "dateOfBirth": "1990-05-15",
+      "phone": "+27821234567",
+      "idNumber": "9005150000081",
+      "idType": "ID Card",
+      "email": "daniel.pretorius@example.com",
       "postalAddress": {
         "streetName": "Main Street",
         "buildingNumber": "123",

@@ -43,6 +43,8 @@
     "originator": {
       "email": "alice.wanjiru@example.com",
       "phone": "+254723456789",
+      "idNumber": "13572468",
+      "idType": "National ID",
       "externalReferenceId": "123",
       "postalAddress": {
         "country": "KE",

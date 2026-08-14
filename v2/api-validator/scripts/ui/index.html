@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -6,178 +6,627 @@
     <title>Network Link script runner</title>
     <style>
       :root {
-        --bg: #0f1115;
-        --panel: #171a21;
-        --panel-2: #1e222b;
-        --border: #2b303b;
-        --text: #e6e8ee;
-        --muted: #98a0b3;
+        --bg: #0e1013;
+        --surface: #15181d;
+        --surface-2: #1b1f26;
+        --surface-3: #21262f;
+        --border: #272c35;
+        --border-strong: #363d4a;
+        --text: #e7e9ee;
+        --muted: #949cad;
+        --faint: #6d7583;
         --accent: #6ea8fe;
-        --danger: #ff6b6b;
-        --danger-bg: #2a1618;
         --ok: #5ed39a;
+        --danger: #ff6b6b;
+        --danger-dim: #2b1719;
         --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       }
       * {
         box-sizing: border-box;
       }
+      html,
+      body {
+        height: 100%;
+      }
       body {
         margin: 0;
         background: var(--bg);
         color: var(--text);
-        font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font: 13px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        overflow: hidden;
       }
-      header {
-        padding: 18px 24px;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: baseline;
-        gap: 12px;
-      }
-      header h1 {
-        font-size: 16px;
+      h1,
+      h2 {
         margin: 0;
+        font-size: 13px;
         font-weight: 600;
       }
-      header span {
-        color: var(--muted);
-        font-size: 13px;
+      button {
+        font: inherit;
+        cursor: pointer;
       }
+      ::selection {
+        background: #2f4a78;
+      }
+
+      /* ---------- header: what this run will hit ---------- */
+      header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 0 16px;
+        height: 52px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+      }
+      header.prod {
+        border-bottom-color: var(--danger);
+      }
+      .brand {
+        color: var(--muted);
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
+      }
+      .envs {
+        display: flex;
+        gap: 4px;
+        padding: 3px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+      }
+      .envs button {
+        background: none;
+        border: 0;
+        border-radius: 6px;
+        padding: 5px 12px;
+        color: var(--muted);
+        font-weight: 500;
+      }
+      .envs button:hover {
+        color: var(--text);
+      }
+      .envs button[aria-pressed='true'] {
+        background: var(--surface-3);
+        color: var(--text);
+        box-shadow: inset 0 0 0 1px var(--border-strong);
+      }
+      .envs button.prod[aria-pressed='true'] {
+        background: var(--danger-dim);
+        color: #ff9b9b;
+        box-shadow: inset 0 0 0 1px var(--danger);
+      }
+      .conn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        font-family: var(--mono);
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+      .conn .url {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .conn .sep {
+        color: var(--border-strong);
+      }
+      .prod-tag {
+        margin-left: auto;
+        padding: 4px 9px;
+        border: 1px solid var(--danger);
+        border-radius: 6px;
+        color: var(--danger);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        white-space: nowrap;
+      }
+
+      /* ---------- three columns, each scrolling on its own ---------- */
       main {
         display: grid;
-        grid-template-columns: minmax(360px, 460px) 1fr;
-        gap: 20px;
-        padding: 20px 24px 40px;
-        align-items: start;
+        grid-template-columns: 232px minmax(380px, 0.95fr) minmax(400px, 1.15fr);
+        min-height: 0;
       }
-      @media (max-width: 900px) {
+      main > * {
+        min-height: 0;
+        overflow-y: auto;
+        border-right: 1px solid var(--border);
+      }
+      /* Columns with a pinned header or footer scroll their middle section instead. */
+      .request,
+      .result {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .request > .col-head,
+      .request > .actions,
+      .result > .result-head {
+        flex: none;
+      }
+      .body-pad,
+      .panes {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+      }
+      main > :last-child {
+        border-right: 0;
+      }
+      @media (max-width: 1180px) {
+        main {
+          grid-template-columns: 220px 1fr;
+        }
+        .result {
+          grid-column: 1 / -1;
+          border-top: 1px solid var(--border);
+        }
+      }
+      @media (max-width: 780px) {
+        body {
+          overflow: auto;
+        }
         main {
           grid-template-columns: 1fr;
         }
+        main > *,
+        .request,
+        .result,
+        .body-pad,
+        .panes {
+          overflow: visible;
+        }
       }
-      .panel {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 18px;
+
+      .col-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 40px;
+        padding: 0 14px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+        position: sticky;
+        top: 0;
+        z-index: 2;
       }
-      label {
-        display: block;
-        font-size: 12px;
+      .col-head .sub {
+        color: var(--faint);
+        font-size: 11.5px;
+        font-family: var(--mono);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* ---------- script list ---------- */
+      .scripts {
+        background: var(--surface);
+      }
+      .search {
+        padding: 10px 12px;
+        position: sticky;
+        top: 0;
+        background: var(--surface);
+        z-index: 2;
+        border-bottom: 1px solid var(--border);
+      }
+      .group {
+        padding: 12px 12px 3px;
+        color: var(--faint);
+        font-size: 10.5px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+      }
+      .script {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: 0;
+        border-left: 2px solid transparent;
+        padding: 6px 12px 6px 10px;
         color: var(--muted);
-        margin: 0 0 6px;
+        line-height: 1.35;
+      }
+      .script:hover {
+        background: var(--surface-2);
+        color: var(--text);
+      }
+      .script[aria-current='true'] {
+        background: var(--surface-3);
+        border-left-color: var(--accent);
+        color: var(--text);
+        font-weight: 500;
+      }
+      .script .creates {
+        margin-left: auto;
+        flex: none;
+        color: var(--faint);
+        font-size: 10px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .script[aria-current='true'] .creates {
+        color: #d99a9a;
+      }
+
+      /* ---------- request form ---------- */
+      .request {
+        background: var(--bg);
+      }
+      .body-pad {
+        padding: 14px;
       }
       .field {
-        margin-bottom: 16px;
+        margin-bottom: 14px;
       }
-      select,
-      input[type="text"],
+      label,
+      .label {
+        display: block;
+        margin: 0 0 5px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .label-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 5px;
+      }
+      .label-row .label {
+        margin: 0;
+      }
+      .label-row .spacer {
+        margin-left: auto;
+      }
+      input[type='text'],
       textarea {
         width: 100%;
-        background: var(--panel-2);
+        background: var(--surface-2);
         color: var(--text);
         border: 1px solid var(--border);
         border-radius: 6px;
-        padding: 9px 10px;
-        font-size: 13px;
+        padding: 8px 10px;
+        font-size: 12.5px;
         font-family: inherit;
+      }
+      input[type='text']::placeholder {
+        color: var(--faint);
       }
       textarea {
         font-family: var(--mono);
         font-size: 12px;
-        line-height: 1.5;
-        min-height: 320px;
+        line-height: 1.55;
+        min-height: 300px;
         resize: vertical;
         white-space: pre;
+        tab-size: 2;
       }
-      select:focus,
+      textarea.invalid {
+        border-color: var(--danger);
+      }
       input:focus,
-      textarea:focus {
+      textarea:focus,
+      .search input:focus {
         outline: 2px solid var(--accent);
         outline-offset: -1px;
       }
-      .targets {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
+      .hint {
+        margin: 5px 0 0;
+        color: var(--faint);
+        font-size: 11.5px;
       }
-      .target {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 10px 12px;
-        background: var(--panel-2);
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        cursor: pointer;
-      }
-      .target:has(input:checked) {
-        border-color: var(--accent);
-      }
-      .target.prod:has(input:checked) {
-        border-color: var(--danger);
-        background: var(--danger-bg);
-      }
-      .target input {
-        margin: 3px 0 0;
-        accent-color: var(--accent);
-      }
-      .target .name {
-        font-weight: 600;
-      }
-      .target.prod .name {
-        color: var(--danger);
-      }
-      .target .meta {
-        color: var(--muted);
+      .hint code {
         font-family: var(--mono);
-        font-size: 11px;
-        word-break: break-all;
+        color: var(--muted);
       }
-      .warn {
-        margin: 0 0 16px;
-        padding: 12px;
-        border: 1px solid var(--danger);
-        background: var(--danger-bg);
-        border-radius: 6px;
-        color: var(--danger);
-        font-size: 13px;
+      .linkish {
+        background: none;
+        border: 0;
+        padding: 0;
+        color: var(--accent);
+        font-size: 11.5px;
+        text-decoration: underline;
       }
-      .warn strong {
+      .linkish:disabled {
+        color: var(--faint);
+        cursor: not-allowed;
+        text-decoration: none;
+      }
+
+      /* ---------- payload list ---------- */
+      .payloads {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        max-height: 268px;
+        overflow-y: auto;
+        background: var(--surface);
+      }
+      .payload {
         display: block;
-        margin-bottom: 6px;
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: 0;
+        border-left: 2px solid transparent;
+        border-bottom: 1px solid var(--border);
+        padding: 8px 10px;
+        color: var(--muted);
       }
-      .actions {
+      .payload:last-child {
+        border-bottom: 0;
+      }
+      .payload:hover {
+        background: var(--surface-2);
+      }
+      .payload[aria-current='true'] {
+        background: var(--surface-3);
+        border-left-color: var(--accent);
+      }
+      .payload .top {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 6px;
         flex-wrap: wrap;
       }
-      button {
+      .payload .variant {
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+      .payload .note {
+        display: block;
+        margin-top: 3px;
+        color: var(--faint);
+        font-size: 11.5px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .chip {
+        padding: 1px 6px;
+        border: 1px solid var(--border-strong);
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 10.5px;
+        font-family: var(--mono);
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+      }
+      .chip.ccy {
+        border-color: #2f4a5e;
+        color: #8fc7dd;
+      }
+      .chip.country {
+        border-color: #3d3a53;
+        color: #b0a6d6;
+      }
+      .chip.private {
+        border-color: #4d4326;
+        color: #d9b872;
+      }
+      .chip.edited {
+        border-color: #4d4326;
+        color: #e0bd74;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .empty {
+        padding: 10px;
+        color: var(--faint);
+        font-size: 12px;
+      }
+
+      /* ---------- buttons ---------- */
+      .btn {
+        background: var(--surface-3);
+        color: var(--text);
+        border: 1px solid var(--border-strong);
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-size: 11.5px;
+        font-weight: 500;
+      }
+      .btn:hover:not(:disabled) {
+        background: #2a303a;
+      }
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .btn.danger {
+        border-color: var(--danger);
+        color: var(--danger);
+        background: none;
+      }
+      .btn.danger:hover:not(:disabled) {
+        background: var(--danger-dim);
+      }
+      .run {
         background: var(--accent);
         color: #0b1020;
         border: 0;
         border-radius: 6px;
-        padding: 10px 18px;
+        padding: 9px 18px;
         font-size: 13px;
         font-weight: 600;
-        cursor: pointer;
       }
-      button:disabled {
+      .run.confirm {
+        background: var(--danger);
+        color: #fff;
+      }
+      .run:disabled {
         opacity: 0.45;
         cursor: not-allowed;
       }
-      button.secondary {
-        background: var(--panel-2);
-        color: var(--text);
-        border: 1px solid var(--border);
-        font-weight: 500;
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding: 12px 14px;
+        border-top: 1px solid var(--border);
+        background: var(--surface);
+        position: sticky;
+        bottom: 0;
       }
-      button.confirm {
+      .msg {
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+      .msg.ok {
+        color: var(--ok);
+      }
+      .msg.err {
+        color: var(--danger);
+      }
+
+      .warn {
+        margin-bottom: 14px;
+        padding: 10px 12px;
+        border: 1px solid var(--danger);
+        border-radius: 6px;
+        background: var(--danger-dim);
+        color: #ffb0b0;
+        font-size: 12px;
+      }
+      .new-payload {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+        padding: 8px;
+        border: 1px solid var(--border-strong);
+        border-radius: 6px;
+        background: var(--surface);
+        flex-wrap: wrap;
+      }
+      .new-payload .prefix {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--faint);
+      }
+      .new-payload input[type='text'] {
+        flex: 1;
+        min-width: 120px;
+        width: auto;
+        font-family: var(--mono);
+      }
+      .new-payload .check {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 11.5px;
+        font-weight: 400;
+        letter-spacing: 0;
+        text-transform: none;
+        white-space: nowrap;
+      }
+      .new-payload input[type='checkbox'] {
+        accent-color: var(--accent);
+        margin: 0;
+      }
+
+      /* ---------- result ---------- */
+      .result {
+        background: var(--bg);
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+      .result-head {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+      }
+      .status-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 40px;
+        padding: 0 14px;
+      }
+      .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--faint);
+        flex: none;
+      }
+      .dot.ok {
+        background: var(--ok);
+      }
+      .dot.err {
         background: var(--danger);
-        color: #fff;
+      }
+      .dot.busy {
+        background: var(--accent);
+        animation: pulse 1s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.25;
+        }
+      }
+      .status-row .what {
+        font-weight: 600;
+      }
+      .status-row .detail {
+        color: var(--faint);
+        font-family: var(--mono);
+        font-size: 11.5px;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .tabs {
+        display: flex;
+        gap: 2px;
+        padding: 0 14px;
+      }
+      .tabs button {
+        background: none;
+        border: 0;
+        border-bottom: 2px solid transparent;
+        padding: 7px 10px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .tabs button:hover {
+        color: var(--text);
+      }
+      .tabs button[aria-selected='true'] {
+        color: var(--text);
+        border-bottom-color: var(--accent);
+      }
+      .tabs .spacer {
+        margin-left: auto;
+      }
+      .tabs .btn {
+        align-self: center;
+      }
+      .panes {
+        overflow: auto;
+        padding: 12px 14px 24px;
       }
       pre {
         margin: 0;
@@ -186,23 +635,50 @@
         line-height: 1.55;
         white-space: pre-wrap;
         word-break: break-word;
-        max-height: calc(100vh - 200px);
-        overflow: auto;
       }
-      .status {
-        font-size: 12px;
-        color: var(--muted);
+      .block {
+        margin-bottom: 16px;
       }
-      .status.ok {
-        color: var(--ok);
+      .block > .label {
+        margin-bottom: 6px;
       }
-      .status.err {
-        color: var(--danger);
+      .fail {
+        padding: 10px 12px;
+        border: 1px solid var(--danger);
+        border-left-width: 3px;
+        border-radius: 6px;
+        background: var(--danger-dim);
+        margin-bottom: 16px;
       }
-      .hint {
-        font-size: 12px;
-        color: var(--muted);
-        margin: -10px 0 16px;
+      .fail .why {
+        color: #ffbdbd;
+        font-family: var(--mono);
+        font-size: 12.5px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .fail .req {
+        margin-top: 6px;
+        color: #d69a9a;
+        font-family: var(--mono);
+        font-size: 11.5px;
+        word-break: break-all;
+      }
+      .placeholder {
+        color: var(--faint);
+      }
+      .key {
+        color: #8fc7dd;
+      }
+      .str {
+        color: #b3d68b;
+      }
+      .num {
+        color: #e0bd74;
+      }
+      .bool,
+      .null {
+        color: #c69ae0;
       }
       .hidden {
         display: none !important;
@@ -210,233 +686,753 @@
     </style>
   </head>
   <body>
-    <header>
-      <h1>Network Link script runner</h1>
-      <span>local only &middot; credentials stay in your .env files</span>
+    <header id="header">
+      <h1 class="brand">Network Link runner</h1>
+      <div class="envs" id="envs"></div>
+      <div class="conn" id="conn"></div>
+      <div class="prod-tag hidden" id="prodTag">PRODUCTION</div>
     </header>
 
     <main>
-      <form class="panel" id="form" autocomplete="off">
-        <div class="field">
-          <label for="script">Script</label>
-          <select id="script"></select>
+      <nav class="scripts">
+        <div class="search">
+          <input type="text" id="search" placeholder="Filter requests  /" autocomplete="off" />
+        </div>
+        <div id="scriptList"></div>
+      </nav>
+
+      <form class="request" id="form" autocomplete="off">
+        <div class="col-head">
+          <h2 id="scriptName">Request</h2>
+          <span class="sub" id="scriptFile"></span>
         </div>
 
-        <div class="field">
-          <label>Environment</label>
-          <div class="targets" id="targets"></div>
-        </div>
+        <div class="body-pad">
+          <div id="prodWarning" class="warn hidden"></div>
 
-        <div class="field hidden" id="accountField">
-          <label for="accountId">Account ID</label>
-          <input type="text" id="accountId" />
-          <p class="hint" id="accountHint"></p>
-        </div>
-
-        <div class="field hidden" id="extraField">
-          <label for="extraArg" id="extraLabel"></label>
-          <input type="text" id="extraArg" />
-        </div>
-
-        <div class="field hidden" id="payloadField">
-          <label for="payload">Payload</label>
-          <select id="payload"></select>
-        </div>
-
-        <div class="field hidden" id="bodyField">
-          <label for="payloadBody">Request body</label>
-          <textarea id="payloadBody" spellcheck="false"></textarea>
-          <p class="hint" id="bodyHint">
-            Edits are sent for this run only. Use Save to write them back to the payload file.
+          <p class="hint hidden" id="noInput" style="margin-top: 0">
+            No input needed — this request takes the server URL from the selected environment.
           </p>
-        </div>
 
-        <div id="prodWarning" class="warn hidden">
-          <strong>Production</strong>
-          <span id="prodWarningText"></span>
+          <div class="field hidden" id="accountField">
+            <div class="label-row">
+              <label class="label" for="accountId">Account ID</label>
+              <button type="button" class="linkish spacer hidden" id="accountReset">
+                use env default
+              </button>
+            </div>
+            <input type="text" id="accountId" placeholder="account id" />
+            <p class="hint" id="accountHint"></p>
+          </div>
+
+          <div class="field hidden" id="extraField">
+            <label class="label" for="extraArg" id="extraLabel"></label>
+            <input type="text" id="extraArg" />
+          </div>
+
+          <div class="field hidden" id="payloadField">
+            <div class="label-row">
+              <span class="label">Payload <span id="payloadCount"></span></span>
+              <span class="spacer"></span>
+              <button type="button" class="btn" id="newBtn">New</button>
+              <button type="button" class="btn" id="cloneBtn">Clone</button>
+              <button type="button" class="btn" id="deleteBtn">Delete</button>
+            </div>
+            <div class="payloads" id="payloadList"></div>
+            <div class="new-payload hidden" id="newPayload">
+              <span class="prefix" id="newPrefix"></span>
+              <input type="text" id="newName" placeholder="variant-name" />
+              <label class="check"
+                ><input type="checkbox" id="newPrivate" /> private/ (gitignored)</label
+              >
+              <button type="button" class="btn" id="createBtn">Create</button>
+              <button type="button" class="btn" id="createCancel">Cancel</button>
+            </div>
+          </div>
+
+          <div class="field hidden" id="bodyField">
+            <div class="label-row">
+              <span class="label">Request body</span>
+              <span class="chip edited hidden" id="editedChip">edited</span>
+              <button type="button" class="linkish spacer" id="formatBtn" title="⇧⌥F">
+                format
+              </button>
+              <button type="button" class="linkish hidden" id="revertBtn">revert to file</button>
+            </div>
+            <textarea id="payloadBody" spellcheck="false"></textarea>
+            <p class="hint" id="bodyHint"></p>
+          </div>
         </div>
 
         <div class="actions">
-          <button type="submit" id="runBtn">Run</button>
-          <button type="button" class="secondary hidden" id="saveBtn">Save payload</button>
-          <button type="button" class="secondary hidden" id="cancelBtn">Stop</button>
-          <span class="status" id="status"></span>
+          <button type="submit" class="run" id="runBtn" title="⌘↵">Run</button>
+          <button type="button" class="btn hidden" id="saveBtn" title="⌘S">Save payload</button>
+          <button type="button" class="btn hidden" id="cancelBtn">Stop</button>
+          <span class="msg" id="msg"></span>
         </div>
       </form>
 
-      <div class="panel">
-        <pre id="output">Select a script and press Run.</pre>
-      </div>
+      <section class="result">
+        <div class="result-head">
+          <div class="status-row">
+            <span class="dot" id="dot"></span>
+            <span class="what" id="what">Ready</span>
+            <span class="detail" id="detail"></span>
+          </div>
+          <div class="tabs" role="tablist">
+            <button type="button" role="tab" id="tabResult" aria-selected="true">Result</button>
+            <button type="button" role="tab" id="tabLog" aria-selected="false">Log</button>
+            <span class="spacer"></span>
+            <button type="button" class="btn" id="copyBtn">Copy</button>
+          </div>
+        </div>
+        <div class="panes" id="panes">
+          <div id="paneResult">
+            <p class="placeholder">Pick a request and press Run.</p>
+          </div>
+          <pre id="paneLog" class="hidden"></pre>
+        </div>
+      </section>
     </main>
 
     <script>
       const el = (id) => document.getElementById(id);
-      const state = { scripts: [], targets: [], controller: null, awaitingConfirm: false };
+      const STORE_KEY = 'nl-runner';
+
+      const state = {
+        scripts: [],
+        targets: [],
+        scriptId: null,
+        target: null,
+        payload: null,
+        controller: null,
+        awaitingConfirm: false,
+        awaitingDelete: false,
+        tab: 'result',
+        log: '',
+      };
+
+      /** Selections and unsaved payload edits, so a reload lands you back where you were. */
+      const saved = (() => {
+        try {
+          return JSON.parse(localStorage.getItem(STORE_KEY)) || {};
+        } catch {
+          return {};
+        }
+      })();
+      saved.perScript ||= {};
+      saved.accounts ||= {};
+      saved.drafts ||= {};
+      const persist = () => localStorage.setItem(STORE_KEY, JSON.stringify(saved));
+
+      /** The client colours its error output; the codes are noise in a browser. */
+      const stripAnsi = (s) => s.replace(/\x1b\[[0-9;]*m/g, '');
+
+      const escapeHtml = (s) =>
+        String(s).replace(
+          /[&<>"]/g,
+          (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])
+        );
 
       function currentScript() {
-        return state.scripts.find((s) => s.id === el('script').value);
+        return state.scripts.find((s) => s.id === state.scriptId);
       }
-
       function currentTarget() {
-        const checked = document.querySelector('input[name="target"]:checked');
-        return state.targets.find((t) => t.name === checked?.value);
+        return state.targets.find((t) => t.name === state.target);
+      }
+      function currentPayload() {
+        return currentScript()?.payloads.find((p) => p.name === state.payload);
+      }
+      function setMsg(text, kind = '') {
+        el('msg').textContent = text;
+        el('msg').className = 'msg ' + kind;
       }
 
-      function setStatus(text, kind = '') {
-        el('status').textContent = text;
-        el('status').className = 'status ' + kind;
-      }
+      // ---------- load ----------
 
-      async function loadConfig() {
-        const res = await fetch('/api/config');
-        const config = await res.json();
+      async function loadConfig(keepSelection = false) {
+        const config = await fetch('/api/config').then((r) => r.json());
         state.scripts = config.scripts;
         state.targets = config.targets;
 
-        const groups = {};
-        for (const script of config.scripts) {
-          (groups[script.group] ||= []).push(script);
+        if (!keepSelection) {
+          // The hash makes a request bookmarkable; otherwise resume where you left off.
+          const fromHash = decodeURIComponent(location.hash.slice(1));
+          state.scriptId =
+            state.scripts.find((s) => s.id === fromHash)?.id ??
+            state.scripts.find((s) => s.id === saved.scriptId)?.id ??
+            state.scripts[0]?.id ??
+            null;
+          state.target =
+            state.targets.find((t) => t.name === saved.target)?.name ??
+            state.targets[0]?.name ??
+            null;
         }
-        el('script').innerHTML = Object.entries(groups)
+
+        renderEnvs();
+        renderScripts();
+        await selectScript(state.scriptId, { keepPayload: keepSelection });
+      }
+
+      function renderEnvs() {
+        if (!state.targets.length) {
+          el('envs').innerHTML = '<span class="msg err">No .env.&lt;target&gt; files found</span>';
+          return;
+        }
+        el('envs').innerHTML = state.targets
           .map(
-            ([group, scripts]) =>
-              `<optgroup label="${group}">` +
-              scripts
-                .map((s) => `<option value="${s.id}">${s.label}${s.mutates ? ' • creates' : ''}</option>`)
-                .join('') +
-              `</optgroup>`
+            (t) =>
+              `<button type="button" class="${t.isProduction ? 'prod' : ''}" data-target="${t.name}"
+                 aria-pressed="${t.name === state.target}">${escapeHtml(t.name)}</button>`
           )
           .join('');
-
-        el('targets').innerHTML = config.targets.length
-          ? config.targets
-              .map(
-                (t, i) => `
-              <label class="target ${t.isProduction ? 'prod' : ''}">
-                <input type="radio" name="target" value="${t.name}" ${i === 0 ? 'checked' : ''} />
-                <span>
-                  <span class="name">${t.name}</span><br />
-                  <span class="meta">${t.serverUrl || 'no SERVER set'}</span><br />
-                  <span class="meta">account: ${t.accountId || 'no ACCOUNT_ID set'}</span>
-                </span>
-              </label>`
-              )
-              .join('')
-          : '<p class="hint">No .env.&lt;target&gt; files found. Create .env.staging and .env.production.</p>';
-
-        for (const input of document.querySelectorAll('input[name="target"]')) {
-          input.addEventListener('change', onTargetChange);
+        for (const button of el('envs').querySelectorAll('button')) {
+          button.onclick = () => {
+            state.target = button.dataset.target;
+            saved.target = state.target;
+            persist();
+            renderEnvs();
+            applyTarget();
+          };
         }
-        el('script').addEventListener('change', onScriptChange);
-        onScriptChange();
       }
 
-      function onTargetChange() {
-        resetConfirm();
-        const target = currentTarget();
-        const script = currentScript();
+      function renderScripts() {
+        const query = el('search').value.trim().toLowerCase();
+        const matches = state.scripts.filter(
+          (s) => !query || `${s.label} ${s.group} ${s.id}`.toLowerCase().includes(query)
+        );
 
-        if (script?.needsAccount) {
-          el('accountId').value = target?.accountId || '';
-          el('accountHint').textContent = target?.accountId
-            ? `Default from .env.${target.name}. Override for a one-off run.`
-            : `No ACCOUNT_ID in .env.${target?.name} — enter one.`;
+        if (!matches.length) {
+          el('scriptList').innerHTML = '<p class="empty">Nothing matches.</p>';
+          return;
         }
 
-        const isProd = !!target?.isProduction;
-        el('prodWarning').classList.toggle('hidden', !isProd);
-        if (isProd) {
-          el('prodWarningText').textContent = script?.mutates
-            ? `This creates a real ramp on ${target.serverUrl || 'production'} using account ${
-                el('accountId').value || target.accountId || '(unset)'
-              }. Press Run, then confirm.`
-            : `Read-only request against ${target.serverUrl || 'production'}. Press Run, then confirm.`;
+        let html = '';
+        let group = null;
+        for (const script of matches) {
+          if (script.group !== group) {
+            group = script.group;
+            html += `<div class="group">${escapeHtml(group)}</div>`;
+          }
+          html += `<button type="button" class="script" data-id="${script.id}"
+              aria-current="${script.id === state.scriptId}">
+              <span>${escapeHtml(script.label)}</span>
+              ${script.mutates ? '<span class="creates">creates</span>' : ''}
+            </button>`;
         }
-        updateRunButton();
+        el('scriptList').innerHTML = html;
+
+        for (const button of el('scriptList').querySelectorAll('.script')) {
+          button.onclick = () => {
+            setMsg('');
+            selectScript(button.dataset.id);
+          };
+        }
       }
 
-      async function onScriptChange() {
+      // ---------- script selection ----------
+
+      async function selectScript(id, { keepPayload = false } = {}) {
+        state.scriptId = id;
+        saved.scriptId = id;
+        persist();
+        history.replaceState(null, '', `#${encodeURIComponent(id)}`);
         resetConfirm();
+        renderScripts();
+
         const script = currentScript();
         if (!script) return;
+
+        el('scriptName').textContent = script.label;
+        el('scriptFile').textContent = script.file;
+
+        const remembered = saved.perScript[script.id] || {};
 
         el('accountField').classList.toggle('hidden', !script.needsAccount);
         el('extraField').classList.toggle('hidden', !script.extraArg);
         if (script.extraArg) {
           el('extraLabel').textContent = script.extraArg.label;
           el('extraArg').placeholder = script.extraArg.placeholder;
-          el('extraArg').value = '';
+          el('extraArg').value = remembered.extraArg || '';
         }
 
         const hasPayloads = script.payloads.length > 0;
+        el('noInput').classList.toggle(
+          'hidden',
+          hasPayloads || script.needsAccount || !!script.extraArg
+        );
         el('payloadField').classList.toggle('hidden', !hasPayloads);
         el('bodyField').classList.toggle('hidden', !hasPayloads);
         el('saveBtn').classList.toggle('hidden', !hasPayloads);
+        el('newPayload').classList.add('hidden');
 
         if (hasPayloads) {
-          el('payload').innerHTML = script.payloads
-            .map((p) => `<option value="${p}">${p}</option>`)
-            .join('');
-          el('payload').onchange = loadPayloadBody;
-          await loadPayloadBody();
+          const wanted = keepPayload ? state.payload : remembered.payload;
+          state.payload = script.payloads.some((p) => p.name === wanted)
+            ? wanted
+            : script.payloads[0].name;
+          renderPayloads();
+          await loadBody();
+        } else {
+          state.payload = null;
+          state.bodyInvalid = false;
         }
 
-        onTargetChange();
+        applyTarget();
+        updateRunEnabled();
       }
 
-      async function loadPayloadBody() {
-        resetConfirm();
-        const name = el('payload').value;
-        setStatus('Loading payload…');
+      function renderPayloads() {
+        const script = currentScript();
+        el('payloadCount').textContent = `(${script.payloads.length})`;
+        el('payloadList').innerHTML = script.payloads
+          .map((p) => {
+            const chips = [
+              ...p.currencies.map((c) => `<span class="chip ccy">${escapeHtml(c)}</span>`),
+              ...p.countries.map((c) => `<span class="chip country">${escapeHtml(c)}</span>`),
+              p.isPrivate ? '<span class="chip private">private</span>' : '',
+              saved.drafts[p.name] !== undefined ? '<span class="chip edited">edited</span>' : '',
+            ].join('');
+            return `<button type="button" class="payload" data-name="${escapeHtml(p.name)}"
+                aria-current="${p.name === state.payload}">
+                <span class="top"><span class="variant">${escapeHtml(
+                  p.variant
+                )}</span>${chips}</span>
+                ${p.comment ? `<span class="note">${escapeHtml(p.comment)}</span>` : ''}
+              </button>`;
+          })
+          .join('');
+
+        for (const button of el('payloadList').querySelectorAll('.payload')) {
+          button.onclick = async () => {
+            state.payload = button.dataset.name;
+            saved.perScript[state.scriptId] = {
+              ...saved.perScript[state.scriptId],
+              payload: state.payload,
+            };
+            persist();
+            resetConfirm();
+            setMsg('');
+            renderPayloads();
+            await loadBody();
+          };
+        }
+      }
+
+      /** Fetch the payload file, then overlay any unsaved draft for it. */
+      async function loadBody() {
+        const name = state.payload;
         const res = await fetch(`/api/payloads/${encodeURIComponent(name)}`);
         const text = await res.text();
         if (!res.ok) {
-          setStatus('Could not load payload', 'err');
           el('payloadBody').value = text;
+          setMsg(`Could not read ${name}`, 'err');
           return;
         }
-        el('payloadBody').value = text.trimEnd();
-        setStatus('');
+        state.fileBody = text.trimEnd();
+        el('payloadBody').value = saved.drafts[name] ?? state.fileBody;
+        onBodyInput();
+      }
+
+      function onBodyInput() {
+        const name = state.payload;
+        if (!name) return;
+        const value = el('payloadBody').value;
+        const dirty = value.trimEnd() !== (state.fileBody ?? '');
+
+        if (dirty) {
+          saved.drafts[name] = value;
+        } else {
+          delete saved.drafts[name];
+        }
+        persist();
+
+        let invalid = '';
+        try {
+          JSON.parse(value);
+        } catch (error) {
+          invalid = error.message;
+        }
+        state.bodyInvalid = !!invalid;
+        el('payloadBody').classList.toggle('invalid', !!invalid);
+        el('editedChip').classList.toggle('hidden', !dirty);
+        el('revertBtn').classList.toggle('hidden', !dirty);
+        el('saveBtn').disabled = !dirty || !!invalid;
+        el('formatBtn').disabled = !!invalid;
+        el('formatBtn').title = invalid ? 'Fix the JSON first' : '⇧⌥F';
+        updateRunEnabled();
+        el('bodyHint').innerHTML = invalid
+          ? `<span class="msg err">Invalid JSON: ${escapeHtml(invalid)}</span>`
+          : dirty
+          ? 'Unsaved edits run as a one-off. Save to write them to the file the CLI reads.'
+          : '<code>$comment</code> is stripped before sending. Ramp scripts add a fresh <code>idempotencyKey</code> per run.';
+        renderPayloadChip();
+      }
+
+      /** Keep the "edited" chip in the payload list in step with the editor. */
+      function renderPayloadChip() {
+        const row = el('payloadList').querySelector(
+          `.payload[data-name="${CSS.escape(state.payload)}"] .top`
+        );
+        if (!row) return;
+        const chip = row.querySelector('.chip.edited');
+        const dirty = saved.drafts[state.payload] !== undefined;
+        if (dirty && !chip) {
+          row.insertAdjacentHTML('beforeend', '<span class="chip edited">edited</span>');
+        } else if (!dirty && chip) {
+          chip.remove();
+        }
+      }
+
+      // ---------- environment ----------
+
+      function applyTarget() {
+        resetConfirm();
+        const target = currentTarget();
+        const script = currentScript();
+        const isProd = !!target?.isProduction;
+
+        el('header').classList.toggle('prod', isProd);
+        el('prodTag').classList.toggle('hidden', !isProd);
+
+        if (script?.needsAccount) {
+          const override = saved.accounts[target?.name];
+          el('accountId').value = override || target?.accountId || '';
+        }
+        renderConn();
+
+        el('prodWarning').classList.toggle('hidden', !isProd);
+        if (isProd) {
+          el('prodWarning').innerHTML = script?.mutates
+            ? `<strong>This creates a real record on production.</strong> Run asks for a second click to confirm.`
+            : `Read-only request against production. Run asks for a second click to confirm.`;
+        }
+
+        if (script?.needsAccount) {
+          renderAccountHint();
+        }
+        updateRunButton();
+      }
+
+      function renderAccountHint() {
+        const target = currentTarget();
+        const value = el('accountId').value.trim();
+        const isOverride = !!target?.accountId && value !== target.accountId;
+        el('accountReset').classList.toggle('hidden', !isOverride);
+        el('accountHint').textContent = !target?.accountId
+          ? `No ACCOUNT_ID in .env.${target?.name} — enter one.`
+          : isOverride
+          ? `Overriding .env.${target.name} (${target.accountId}).`
+          : `From .env.${target.name}.`;
+      }
+
+      function renderConn() {
+        const target = currentTarget();
+        const account = currentScript()?.needsAccount ? el('accountId').value.trim() : '';
+        el('conn').innerHTML = target
+          ? `<span class="url">${escapeHtml(target.serverUrl || 'no SERVER set')}</span>` +
+            (account
+              ? `<span class="sep">|</span><span class="url">account ${escapeHtml(account)}</span>`
+              : '')
+          : '';
+      }
+
+      // ---------- run button / confirm ----------
+
+      /** A payload that is not valid JSON would only fail server-side, so block Run. */
+      function updateRunEnabled() {
+        el('runBtn').disabled = !!state.controller || (!!state.bodyInvalid && !!state.payload);
       }
 
       function updateRunButton() {
         const isProd = !!currentTarget()?.isProduction;
-        el('runBtn').className = state.awaitingConfirm ? 'confirm' : '';
+        el('runBtn').className = 'run' + (state.awaitingConfirm ? ' confirm' : '');
         el('runBtn').textContent = state.awaitingConfirm
-          ? 'Confirm — run against production'
+          ? 'Confirm — run on production'
           : isProd
-          ? 'Run…'
+          ? 'Run on production'
           : 'Run';
       }
 
       function resetConfirm() {
         state.awaitingConfirm = false;
+        resetDelete();
         updateRunButton();
       }
 
-      el('saveBtn').addEventListener('click', async () => {
-        const name = el('payload').value;
-        setStatus('Saving…');
+      function resetDelete() {
+        state.awaitingDelete = false;
+        el('deleteBtn').className = 'btn';
+        el('deleteBtn').textContent = 'Delete';
+      }
+
+      // ---------- payload files ----------
+
+      function openNewPayload(seed) {
+        state.newSeed = seed;
+        el('newPayload').classList.remove('hidden');
+        el('newPrefix').textContent = currentScript().payloadPrefix;
+        el('newName').value = seed === 'clone' ? `${currentPayload()?.variant}-copy` : '';
+        el('newPrivate').checked = seed === 'clone' && !!currentPayload()?.isPrivate;
+        el('newName').focus();
+        el('newName').select();
+      }
+
+      el('newBtn').onclick = () => openNewPayload('blank');
+      el('cloneBtn').onclick = () => openNewPayload('clone');
+      el('createCancel').onclick = () => el('newPayload').classList.add('hidden');
+
+      el('createBtn').onclick = async () => {
+        const script = currentScript();
+        const variant = el('newName')
+          .value.trim()
+          .replace(/\.json$/, '');
+        if (!variant) {
+          setMsg('Give the payload a name', 'err');
+          return;
+        }
+        const name = (el('newPrivate').checked ? 'private/' : '') + script.payloadPrefix + variant;
+        const body =
+          state.newSeed === 'clone'
+            ? el('payloadBody').value
+            : '{\n  "$comment": "what this payload is for"\n}';
+
+        const res = await fetch(`/api/payloads/${encodeURIComponent(name)}`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ body }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setMsg(data.error, 'err');
+          return;
+        }
+        el('newPayload').classList.add('hidden');
+        state.payload = name;
+        await loadConfig(true);
+        setMsg(`Created ${data.created}`, 'ok');
+      };
+
+      el('deleteBtn').onclick = async () => {
+        if (!state.awaitingDelete) {
+          state.awaitingDelete = true;
+          el('deleteBtn').className = 'btn danger';
+          el('deleteBtn').textContent = `Delete ${currentPayload()?.variant}?`;
+          return;
+        }
+        const name = state.payload;
+        resetDelete();
+        const res = await fetch(`/api/payloads/${encodeURIComponent(name)}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) {
+          setMsg(data.error, 'err');
+          return;
+        }
+        delete saved.drafts[name];
+        state.payload = null;
+        persist();
+        await loadConfig(true);
+        setMsg(`Deleted ${data.deleted}`, 'ok');
+      };
+
+      el('saveBtn').onclick = async () => {
+        const name = state.payload;
         const res = await fetch(`/api/payloads/${encodeURIComponent(name)}`, {
           method: 'PUT',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ body: el('payloadBody').value }),
         });
         const data = await res.json();
-        setStatus(res.ok ? `Saved ${data.saved}` : `Save failed: ${data.error}`, res.ok ? 'ok' : 'err');
-      });
+        if (!res.ok) {
+          setMsg(`Save failed: ${data.error}`, 'err');
+          return;
+        }
+        delete saved.drafts[name];
+        persist();
+        state.fileBody = el('payloadBody').value.trimEnd();
+        onBodyInput();
+        // Currency and country chips come from the file, so refresh them.
+        await loadConfig(true);
+        setMsg(`Saved ${data.saved}`, 'ok');
+      };
 
-      el('cancelBtn').addEventListener('click', () => {
-        state.controller?.abort();
-      });
+      el('revertBtn').onclick = async () => {
+        delete saved.drafts[state.payload];
+        persist();
+        await loadBody();
+      };
+
+      /**
+       * Re-indent the body with the same 2-space JSON the payload files use.
+       *
+       * Keeps the caret roughly where it was by restoring the scroll position;
+       * moving it exactly would mean mapping offsets across a reformat.
+       */
+      el('formatBtn').onclick = () => {
+        const field = el('payloadBody');
+        let parsed;
+        try {
+          parsed = JSON.parse(field.value);
+        } catch {
+          return; // The button is disabled in this state; guard anyway.
+        }
+        const formatted = JSON.stringify(parsed, null, 2);
+        if (formatted === field.value.trimEnd()) {
+          setMsg('Already formatted');
+          return;
+        }
+        const { scrollTop } = field;
+        field.value = formatted;
+        field.scrollTop = scrollTop;
+        onBodyInput();
+        setMsg('Formatted');
+      };
+
+      // ---------- result rendering ----------
+
+      /** The pretty-printed JSON block that follows a heading line in the script output. */
+      function blockAfter(text, heading) {
+        const lines = text.split('\n');
+        const start = lines.findIndex((line) => line === heading);
+        if (start === -1) return null;
+
+        const body = [];
+        for (const line of lines.slice(start + 1)) {
+          if (!body.length && line === '') continue;
+          if (body.length && (line === '' || line.startsWith('--- exit code'))) break;
+          body.push(line);
+          if (body.length > 1 && (line === '}' || line === ']')) break;
+        }
+        return body.length ? body.join('\n') : null;
+      }
+
+      // Runs on already-escaped text, so a JSON string is delimited by &quot; here.
+      function highlight(text) {
+        return escapeHtml(text).replace(
+          /(&quot;(?:\\.|(?!&quot;)[\s\S])*?&quot;)(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/g,
+          (match, quoted, colon, word) => {
+            if (quoted) {
+              return colon
+                ? `<span class="key">${quoted}</span>${colon}`
+                : `<span class="str">${quoted}</span>`;
+            }
+            return `<span class="${
+              word ? (word === 'null' ? 'null' : 'bool') : 'num'
+            }">${match}</span>`;
+          }
+        );
+      }
+
+      function jsonBlock(label, text) {
+        return `<div class="block"><span class="label">${label}</span><pre>${highlight(
+          text
+        )}</pre></div>`;
+      }
+
+      /** Strip the command line, payload name and config preamble the runner prints. */
+      function withoutPreamble(text) {
+        const lines = text.split('\n');
+        const configEnd = lines.findIndex((line) => line.startsWith('  Account ID:')) + 1;
+        const from = configEnd || lines.findIndex((line) => line.startsWith('  Server URL:')) + 1;
+        return lines
+          .slice(from)
+          .join('\n')
+          .replace(/\n*--- exit code \S+ ---\n*/, '')
+          .trim();
+      }
+
+      function renderResult(text, { exitCode, seconds } = {}) {
+        const failed = exitCode !== undefined && exitCode !== 0;
+        const errorLine = text.match(/^Error: (.*)$/m);
+        // The client prints `GET <url>`; run() prints `Request: GET <url>`.
+        const request =
+          text.match(/^Request: (\S+) (\S+)$/m) ||
+          text.match(/^\s*(GET|POST|PUT|PATCH|DELETE) (https?:\/\/\S+)$/m);
+        const httpStatus =
+          text.match(/^\s*Status:\s*(\d{3})/m) ||
+          text.match(/status code (\d{3})/) ||
+          text.match(/"(?:statusCode|status)":\s*(\d{3})/);
+        const savedTo = text.match(/^Output saved to: (.+)$/m);
+
+        const detail = [
+          exitCode !== undefined && failed ? `exit ${exitCode}` : '',
+          httpStatus ? `HTTP ${httpStatus[1]}` : '',
+          seconds ? `${seconds}s` : '',
+          savedTo ? `→ ${savedTo[1].replace(/^.*\/scripts\//, 'scripts/')}` : '',
+        ]
+          .filter(Boolean)
+          .join('  ·  ');
+
+        setStatus(failed ? 'err' : 'ok', failed ? 'Failed' : 'Succeeded', detail);
+
+        let html = '';
+        if (failed) {
+          html += `<div class="fail"><div class="why">${escapeHtml(
+            errorLine ? errorLine[1] : 'The script exited without a response. See the log.'
+          )}</div>${
+            request
+              ? `<div class="req">${escapeHtml(request[1])} ${escapeHtml(request[2])}</div>`
+              : ''
+          }</div>`;
+        }
+
+        const blocks = [
+          ['Response', 'Response:'],
+          ['Server response', 'Response body:'],
+          ['Actual response', 'Actual response:'],
+          ['Validation error', 'Validation error:'],
+        ];
+        for (const [label, heading] of blocks) {
+          const block = blockAfter(text, heading);
+          if (block) html += jsonBlock(label, block);
+        }
+
+        if (!html.includes('class="block"')) {
+          const rest = withoutPreamble(text);
+          html += rest
+            ? `<pre>${escapeHtml(rest)}</pre>`
+            : '<p class="placeholder">No output. See the log.</p>';
+        }
+        el('paneResult').innerHTML = html;
+        // The log was scrolled to the bottom while streaming; start the result at the top.
+        el('panes').scrollTop = 0;
+      }
+
+      function setStatus(kind, what, detail = '') {
+        el('dot').className = 'dot ' + kind;
+        el('what').textContent = what;
+        el('detail').textContent = detail;
+      }
+
+      function showTab(tab) {
+        state.tab = tab;
+        el('tabResult').setAttribute('aria-selected', tab === 'result');
+        el('tabLog').setAttribute('aria-selected', tab === 'log');
+        el('paneResult').classList.toggle('hidden', tab !== 'result');
+        el('paneLog').classList.toggle('hidden', tab !== 'log');
+      }
+
+      el('tabResult').onclick = () => showTab('result');
+      el('tabLog').onclick = () => showTab('log');
+      el('copyBtn').onclick = () => {
+        const text = state.tab === 'log' ? state.log : el('paneResult').innerText;
+        navigator.clipboard.writeText(text).then(
+          () => setMsg('Copied', 'ok'),
+          () => setMsg('Could not copy', 'err')
+        );
+      };
+
+      // ---------- run ----------
+
+      el('cancelBtn').onclick = () => state.controller?.abort();
 
       el('form').addEventListener('submit', async (event) => {
         event.preventDefault();
-
         const script = currentScript();
         const target = currentTarget();
         if (!script || !target) {
-          setStatus('Pick a script and an environment', 'err');
+          setMsg('Pick a request and an environment', 'err');
           return;
         }
 
@@ -444,10 +1440,11 @@
         if (target.isProduction && !state.awaitingConfirm) {
           state.awaitingConfirm = true;
           updateRunButton();
-          setStatus('Click again to confirm', 'err');
+          setMsg('Click again to confirm', 'err');
           return;
         }
         resetConfirm();
+        setMsg('');
 
         const body = {
           scriptId: script.id,
@@ -455,25 +1452,30 @@
           accountId: script.needsAccount ? el('accountId').value.trim() : undefined,
           extraArg: script.extraArg ? el('extraArg').value.trim() : undefined,
         };
-
-        if (script.payloads.length) {
-          body.payload = el('payload').value;
-          const stored = await fetch(`/api/payloads/${encodeURIComponent(body.payload)}`).then((r) =>
-            r.ok ? r.text() : null
-          );
-          const edited = el('payloadBody').value;
+        if (state.payload) {
+          body.payload = state.payload;
           // Only send a body when it differs from the stored file, so an
           // unedited run uses the exact same file the CLI would.
-          if (stored === null || stored.trimEnd() !== edited.trimEnd()) {
-            body.payloadBody = edited;
+          if (el('payloadBody').value.trimEnd() !== (state.fileBody ?? '')) {
+            body.payloadBody = el('payloadBody').value;
           }
         }
 
+        saved.perScript[script.id] = {
+          payload: state.payload || undefined,
+          extraArg: body.extraArg || undefined,
+        };
+        persist();
+
         el('runBtn').disabled = true;
         el('cancelBtn').classList.remove('hidden');
-        setStatus('Running…');
-        el('output').textContent = '';
+        setStatus('busy', 'Running…', `${script.file} on ${target.name}`);
+        state.log = '';
+        el('paneLog').textContent = '';
+        el('paneResult').innerHTML = '<p class="placeholder">Running…</p>';
+        showTab('log');
 
+        const started = Date.now();
         state.controller = new AbortController();
         try {
           const res = await fetch('/api/run', {
@@ -485,40 +1487,118 @@
 
           if (!res.ok && res.headers.get('content-type')?.includes('application/json')) {
             const data = await res.json();
-            el('output').textContent = data.error;
-            setStatus('Failed', 'err');
+            state.log = data.error;
+            el('paneLog').textContent = data.error;
+            setStatus('err', 'Failed', 'runner rejected the request');
+            el('paneResult').innerHTML = `<div class="fail"><div class="why">${escapeHtml(
+              data.error
+            )}</div></div>`;
+            showTab('result');
             return;
           }
 
           const reader = res.body.getReader();
           const decoder = new TextDecoder();
-          let text = '';
+          let raw = '';
           for (;;) {
             const { done, value } = await reader.read();
             if (done) break;
-            text += decoder.decode(value, { stream: true });
-            el('output').textContent = text;
-            el('output').scrollTop = el('output').scrollHeight;
+            raw += decoder.decode(value, { stream: true });
+            state.log = stripAnsi(raw);
+            el('paneLog').textContent = state.log;
+            el('paneLog').parentElement.scrollTop = el('paneLog').parentElement.scrollHeight;
           }
-          const exit = text.match(/--- exit code (\S+) ---/);
-          const ok = exit?.[1] === '0';
-          setStatus(ok ? 'Done' : 'Finished with errors', ok ? 'ok' : 'err');
+
+          const exit = state.log.match(/--- exit code (\S+) ---/);
+          renderResult(state.log, {
+            exitCode: exit ? Number(exit[1]) : undefined,
+            seconds: ((Date.now() - started) / 1000).toFixed(1),
+          });
+          showTab('result');
         } catch (error) {
           if (error.name === 'AbortError') {
-            setStatus('Stopped');
+            setStatus('', 'Stopped', '');
           } else {
-            el('output').textContent += `\n${error.message}\n`;
-            setStatus('Failed', 'err');
+            state.log += `\n${error.message}\n`;
+            el('paneLog').textContent = state.log;
+            setStatus('err', 'Failed', error.message);
           }
         } finally {
-          el('runBtn').disabled = false;
           el('cancelBtn').classList.add('hidden');
           state.controller = null;
+          updateRunEnabled();
+        }
+      });
+
+      // ---------- input wiring ----------
+
+      // Following a bookmarked link in an open tab only changes the hash.
+      window.addEventListener('hashchange', () => {
+        const id = decodeURIComponent(location.hash.slice(1));
+        if (id && id !== state.scriptId && state.scripts.some((s) => s.id === id)) {
+          selectScript(id);
+        }
+      });
+
+      el('search').oninput = renderScripts;
+      el('payloadBody').oninput = onBodyInput;
+
+      el('accountId').oninput = () => {
+        const target = currentTarget();
+        if (!target) return;
+        const value = el('accountId').value.trim();
+        if (value && value !== target.accountId) {
+          saved.accounts[target.name] = value;
+        } else {
+          delete saved.accounts[target.name];
+        }
+        persist();
+        renderConn();
+        renderAccountHint();
+      };
+
+      el('accountReset').onclick = () => {
+        const target = currentTarget();
+        el('accountId').value = target?.accountId || '';
+        delete saved.accounts[target?.name];
+        persist();
+        applyTarget();
+      };
+
+      el('newName').onkeydown = (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          el('createBtn').click();
+        }
+      };
+
+      document.addEventListener('keydown', (event) => {
+        const meta = event.metaKey || event.ctrlKey;
+        if (meta && event.key === 'Enter') {
+          event.preventDefault();
+          el('form').requestSubmit();
+        } else if (meta && event.key.toLowerCase() === 's') {
+          event.preventDefault();
+          if (!el('saveBtn').disabled && !el('saveBtn').classList.contains('hidden')) {
+            el('saveBtn').click();
+          }
+        } else if (event.altKey && event.shiftKey && event.code === 'KeyF') {
+          // Shift+Alt+F, the same reformat shortcut as VS Code.
+          event.preventDefault();
+          if (!el('formatBtn').disabled && !el('bodyField').classList.contains('hidden')) {
+            el('formatBtn').click();
+          }
+        } else if (event.key === '/' && document.activeElement === document.body) {
+          event.preventDefault();
+          el('search').focus();
+        } else if (event.key === 'Escape') {
+          resetConfirm();
+          el('newPayload').classList.add('hidden');
         }
       });
 
       loadConfig().catch((error) => {
-        el('output').textContent = `Could not load config: ${error.message}`;
+        setStatus('err', 'Could not load config', error.message);
       });
     </script>
   </body>

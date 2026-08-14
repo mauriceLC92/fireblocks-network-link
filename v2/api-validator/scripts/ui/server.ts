@@ -56,20 +56,80 @@ function discoverTargets(): Target[] {
   return targets;
 }
 
+type Payload = {
+  /** Name as `--payload` accepts it, e.g. `private/momo-offramp.kes-mpesa`. */
+  name: string;
+  /** The part after the script's prefix, e.g. `kes-mpesa`. */
+  variant: string;
+  /** True for files under the gitignored private/ directory. */
+  isPrivate: boolean;
+  /** First sentence of the payload's `$comment`, when it has one. */
+  comment?: string;
+  /** Fiat currencies and countries mentioned, so variants are told apart at a glance. */
+  currencies: string[];
+  countries: string[];
+};
+
+/** Collect the fiat currency and country codes anywhere in a payload. */
+function tagsOf(value: unknown, currencies: Set<string>, countries: Set<string>): void {
+  if (Array.isArray(value)) {
+    for (const item of value) tagsOf(item, currencies, countries);
+    return;
+  }
+  if (value === null || typeof value !== 'object') return;
+
+  for (const [key, nested] of Object.entries(value as Record<string, unknown>)) {
+    if (key === 'nationalCurrencyCode' && typeof nested === 'string') {
+      currencies.add(nested.toUpperCase());
+    } else if (key === 'country' && typeof nested === 'string' && nested.length <= 3) {
+      countries.add(nested.toUpperCase());
+    }
+    tagsOf(nested, currencies, countries);
+  }
+}
+
+/** Read the non-secret details the UI shows for one payload file. */
+function describePayload(name: string, prefix: string, filePath: string): Payload {
+  const payload: Payload = {
+    name,
+    variant: path.basename(name).slice(prefix.length) || path.basename(name),
+    isPrivate: name.includes('/'),
+    currencies: [],
+    countries: [],
+  };
+
+  try {
+    const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const comment = (parsed as Record<string, unknown>)?.$comment;
+    if (typeof comment === 'string') {
+      payload.comment = comment.split(/(?<=\.)\s/)[0].trim();
+    }
+    const currencies = new Set<string>();
+    const countries = new Set<string>();
+    tagsOf(parsed, currencies, countries);
+    payload.currencies = [...currencies].sort();
+    payload.countries = [...countries].sort();
+  } catch {
+    // Unparseable payloads still belong in the list — the editor is where they get fixed.
+  }
+  return payload;
+}
+
 /**
- * Payload names for a script, matched on `prefix`.
+ * Payloads for a script, matched on `prefix`.
  *
  * Names in a subdirectory keep a `<dir>/` prefix, so payloads in the gitignored
  * `private/` directory — the ones holding live account details — show up in the
  * UI next to the committed ones.
  */
-function payloadsFor(prefix: string | undefined): string[] {
+function payloadsFor(prefix: string | undefined): Payload[] {
   if (!prefix || !fs.existsSync(PAYLOADS_DIR)) return [];
 
-  const names: string[] = [];
+  const payloads: Payload[] = [];
   for (const entry of fs.readdirSync(PAYLOADS_DIR, { withFileTypes: true })) {
     if (entry.isFile() && entry.name.endsWith('.json') && entry.name.startsWith(prefix)) {
-      names.push(path.basename(entry.name, '.json'));
+      const name = path.basename(entry.name, '.json');
+      payloads.push(describePayload(name, prefix, path.join(PAYLOADS_DIR, entry.name)));
       continue;
     }
     if (!entry.isDirectory()) {
@@ -77,11 +137,12 @@ function payloadsFor(prefix: string | undefined): string[] {
     }
     for (const nested of fs.readdirSync(path.join(PAYLOADS_DIR, entry.name))) {
       if (nested.endsWith('.json') && nested.startsWith(prefix)) {
-        names.push(`${entry.name}/${path.basename(nested, '.json')}`);
+        const name = `${entry.name}/${path.basename(nested, '.json')}`;
+        payloads.push(describePayload(name, prefix, path.join(PAYLOADS_DIR, entry.name, nested)));
       }
     }
   }
-  return names.sort();
+  return payloads.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /** Reject anything that could escape scripts/payloads/ or nest deeper than one level. */
@@ -112,6 +173,7 @@ app.get('/api/config', async () => ({
     needsAccount: s.needsAccount,
     mutates: s.mutates ?? false,
     extraArg: s.extraArg ?? null,
+    payloadPrefix: s.payloadPrefix ?? null,
     payloads: payloadsFor(s.payloadPrefix),
   })),
 }));
@@ -141,10 +203,45 @@ app.put<{ Params: { name: string }; Body: { body: string } }>(
     } catch (error) {
       return reply.code(400).send({ error: (error as Error).message });
     }
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
     fs.writeFileSync(filePath, request.body.body.trimEnd() + '\n');
     return { saved: path.relative(VALIDATOR_DIR, filePath) };
   }
 );
+
+/** Create a new payload file. Refuses to overwrite, so a clone can't clobber its source. */
+app.post<{ Params: { name: string }; Body: { body: string } }>(
+  '/api/payloads/:name',
+  async (request, reply) => {
+    let filePath: string;
+    try {
+      filePath = resolvePayloadPath(request.params.name);
+      JSON.parse(request.body.body);
+    } catch (error) {
+      return reply.code(400).send({ error: (error as Error).message });
+    }
+    if (fs.existsSync(filePath)) {
+      return reply.code(409).send({ error: `Payload already exists: ${request.params.name}` });
+    }
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, request.body.body.trimEnd() + '\n');
+    return { created: path.relative(VALIDATOR_DIR, filePath) };
+  }
+);
+
+app.delete<{ Params: { name: string } }>('/api/payloads/:name', async (request, reply) => {
+  let filePath: string;
+  try {
+    filePath = resolvePayloadPath(request.params.name);
+  } catch (error) {
+    return reply.code(400).send({ error: (error as Error).message });
+  }
+  if (!fs.existsSync(filePath)) {
+    return reply.code(404).send({ error: `Payload not found: ${request.params.name}` });
+  }
+  fs.rmSync(filePath);
+  return { deleted: path.relative(VALIDATOR_DIR, filePath) };
+});
 
 type RunBody = {
   scriptId: string;

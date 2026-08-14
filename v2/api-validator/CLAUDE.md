@@ -60,6 +60,8 @@ Liquidity scripts (`scripts/liquidity/`) have no npm aliases — run with `ts-no
 
 `scripts/ui/manifest.ts` lists the runnable scripts; add an entry there when adding a script. `payloadPrefix` makes the UI offer every matching file in `scripts/payloads/`, `extraArg` adds a second positional input, and `mutates: true` flags scripts that create resources. Environments are discovered from `.env.<target>` files; only `SERVER` and `ACCOUNT_ID` are exposed to the browser, never credentials. Targets named `production`/`prod` sort last and require a confirming second click on Run.
 
+`GET/PUT/POST/DELETE /api/payloads/:name` back the payload list, so New/Clone/Delete write real files under `scripts/payloads/`; `resolvePayloadPath` rejects any name that escapes that directory or nests deeper than one level. The page is a single dependency-free `index.html`: unsaved edits live in `localStorage` per payload, the selected request is in the URL hash, and the result panel parses the output format `scripts/_shared.ts` prints (`Response:`, `Error:`, `Request:`, `Output saved to:`) — changing those lines changes what the UI can show.
+
 ### Configuration
 
 `src/config/index.ts` uses `convict`. An optional `src/config/{NODE_ENV}.json` file can override any convict default (loaded at startup if it exists). Key env vars: `SERVER` (required), `API_KEY` (required), `SIGNING_ALGORITHM` (hmac/rsa/ecdsa), `CAPABILITIES_DIR`.

@@ -22,6 +22,10 @@
   "participantsIdentification": {
     "beneficiary": {
       "externalReferenceId": "123",
+      "email": "peter.njoroge@example.com",
+      "phone": "+254712345678",
+      "idNumber": "24681357",
+      "idType": "National ID",
       "postalAddress": {
         "country": "KE",
         "subdivision": "Nairobi County",
@@ -38,6 +42,10 @@
     },
     "originator": {
       "externalReferenceId": "1241234",
+      "email": "alice.wanjiru@example.com",
+      "phone": "+254723456789",
+      "idNumber": "13572468",
+      "idType": "National ID",
       "postalAddress": {
         "country": "KE",
         "subdivision": "Nairobi County",
