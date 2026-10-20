@@ -738,6 +738,7 @@ components:
             - unsupported-source-asset
             - unsupported-destination-asset
             - amount-below-minimum
+            - amount-above-maximum
             - pii-missing
             - unsupported-external-source
             - unsupported-region
@@ -883,6 +884,8 @@ components:
         ramps:
           $ref: '#/components/schemas/AccountsSet'
         rates:
+          $ref: '#/components/schemas/AccountsSet'
+        custom:
           $ref: '#/components/schemas/AccountsSet'
 
     AccountsSet:
@@ -1245,6 +1248,9 @@ components:
         - BNB Smart Chain
         - HyperEVM
         - Sui
+        - Katana
+        - Monad
+        - Sei
     CryptocurrencySymbol:
       type: string
       enum:
@@ -1317,6 +1323,9 @@ components:
         - CANTON
         - HYPE
         - SUI
+        - KAT
+        - MON
+        - SEI
 
     NationalCurrencyCode:
       type: string

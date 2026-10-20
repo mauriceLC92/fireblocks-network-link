@@ -884,6 +884,9 @@ components:
               $ref: '#/components/schemas/AccountHolderDetails'
             iban:
               $ref: '#/components/schemas/Iban'
+            bic:
+              type: string
+              description: Bank Identifier Code (SWIFT/BIC)
 
     IbanTransferDestination:
       allOf:
@@ -910,6 +913,12 @@ components:
           $ref: '#/x-schemas/NationalCurrency'
         transferMethod:
           enum: [ Ach ]
+        bankId:
+          type: string
+          description: >
+            Identifier of the payer's bank, required for PSE-routed Ach
+            on-ramps (e.g. COP). Not applicable to standard Ach transfers.
+          example: "1007"
 
     AchAddress:
       allOf:
@@ -1190,7 +1199,68 @@ components:
           properties:
             referenceId:
               type: string
-    
+
+    FpsUkAccountNumber:
+      type: string
+      pattern: ^\d{8}$
+      description: FPS UK account number (8 digits)
+    FpsUkSortCode:
+      type: string
+      pattern: ^\d{6}$
+      description: FPS UK 6-digit sort code
+    FpsUkBankAccountCountry:
+      type: string
+      pattern: ^.{2}
+      description: FPS UK bank account country (ISO 3166-1 alpha-2)
+    FpsUkCapability:
+      type: object
+      required:
+        - asset
+        - transferMethod
+      properties:
+        asset:
+          $ref: '#/x-schemas/NationalCurrency'
+        transferMethod:
+          type: string
+          enum:
+            - FpsUk
+    FpsUkAddress:
+      allOf:
+        - $ref: '#/components/schemas/FpsUkCapability'
+        - type: object
+          required:
+            - accountHolder
+            - accountNumber
+            - sortCode
+          properties:
+            accountHolder:
+              $ref: '#/components/schemas/AccountHolderDetails'
+            accountNumber:
+              $ref: '#/components/schemas/FpsUkAccountNumber'
+            sortCode:
+              $ref: '#/components/schemas/FpsUkSortCode'
+            bankAccountCountry:
+              $ref: '#/components/schemas/FpsUkBankAccountCountry'
+            bankName:
+              type: string
+              description: Optional bank name
+    FpsUkTransferDestination:
+      allOf:
+        - $ref: '#/components/schemas/FpsUkAddress'
+        - type: object
+          required:
+            - amount
+          properties:
+            amount:
+              $ref: '#/x-schemas/PositiveAmount'
+    FpsUkTransfer:
+      allOf:
+        - $ref: '#/components/schemas/FpsUkTransferDestination'
+        - type: object
+          properties:
+            referenceId:
+              type: string
+
     EuropeanSEPACapability:
       type: object
       required: [ asset, transferMethod ]
@@ -1636,6 +1706,7 @@ components:
         - $ref: '#/components/schemas/PayIdCapability'
         - $ref: '#/components/schemas/InteracCapability'
         - $ref: '#/components/schemas/ChapsCapability'
+        - $ref: '#/components/schemas/FpsUkCapability'
         - $ref: '#/components/schemas/InternalTransferMethod'
     PublicBlockchainTransactionDestination:
       type: object
@@ -1793,6 +1864,7 @@ components:
         - $ref: '#/components/schemas/SpeiAddress'
         - $ref: '#/components/schemas/PixAddressPaymentInstruction'
         - $ref: '#/components/schemas/ChapsAddress'
+        - $ref: '#/components/schemas/FpsUkAddress'
         - $ref: '#/components/schemas/EuropeanSEPAAddress'
         - $ref: '#/components/schemas/LocalBankTransferAddressPaymentInstruction'
         - $ref: '#/components/schemas/MobileMoneyAddressPaymentInstruction'
@@ -1814,6 +1886,7 @@ components:
         - $ref: '#/components/schemas/PayIdAddress'
         - $ref: '#/components/schemas/InteracAddress'
         - $ref: '#/components/schemas/ChapsAddress'
+        - $ref: '#/components/schemas/FpsUkAddress'
 
     DepositAddressStatus:
       enum:
@@ -2075,6 +2148,8 @@ components:
               $ref: '#/components/schemas/PublicBlockchainTransactionDestination'
             participantsIdentification:
               $ref: '#/components/schemas/ParticipantsIdentification'
+            reasonForPayment:
+              $ref: '#/components/schemas/ReasonForPayment'
 
     PeerAccountWithdrawalRequest:
       allOf:

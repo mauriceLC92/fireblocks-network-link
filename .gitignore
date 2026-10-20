@@ -1,6 +1,7 @@
 .DS_Store
 .idea/
 .clinerules/
+v2/openapi/docs.html
 
 .env
 v2/api-validator/scripts/output/
